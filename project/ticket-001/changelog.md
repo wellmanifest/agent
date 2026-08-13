@@ -7,3 +7,5 @@
 - Documented composition with POA, ticket-lifecycle, git-lifecycle and
   saas-lifecycle from Subactor doctor/repair/validator/skills/test/onedev/vault
   experience.
+- Closed after merge of pull request #1 at
+  `c0b6fee04ddcc618b6d11286dba7d1e8d014fdf6`.
