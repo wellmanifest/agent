@@ -32,6 +32,9 @@ vendor or a secret.
   from the request to create and publish this repository.
 - Adopted published `wellmanifest/new-project` v0.16.0 at
   `6800f0138bc9063eb2dacb0a8b797dedcafb7952`.
+- Created seed baseline `b8650be38afef7ac8d1f14d7076fae2157272772`.
+- Added profile/request/run/receipt contracts, GBNF, conformance and
+  composition docs.
 
 ## Blockers
 

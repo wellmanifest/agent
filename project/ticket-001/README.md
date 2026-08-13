@@ -19,18 +19,18 @@ module does not execute agents, store secrets or merge pull requests.
 
 ## Acceptance criteria
 
-- [ ] AC-01: The repository has an immutable published governance adoption and
+- [x] AC-01: The repository has an immutable published governance adoption and
   a real local seed baseline created before implementation.
-- [ ] AC-02: A closed Draft 2020-12 schema defines profile, request, run
+- [x] AC-02: A closed Draft 2020-12 schema defines profile, request, run
   state and receipt variants.
-- [ ] AC-03: Request-only GBNF excludes secrets, shell, argv, remote URLs and
+- [x] AC-03: Request-only GBNF excludes secrets, shell, argv, remote URLs and
   merge commands.
-- [ ] AC-04: Documentation defines lanes, identity separation, lease
+- [x] AC-04: Documentation defines lanes, identity separation, lease
   boundaries, composition with POA/ticket/git lifecycles, and fail-closed
   behavior.
-- [ ] AC-05: Positive and adversarial conformance passes locally and in
+- [x] AC-05: Positive and adversarial conformance passes locally and in
   networkless, read-only Docker.
-- [ ] AC-06: Governance and diff hygiene pass against the exact baseline.
+- [x] AC-06: Governance and diff hygiene pass against the exact baseline.
 
 ## Authorization
 
@@ -47,7 +47,9 @@ release creation or credential access.
 
 ## Baseline
 
-To be written after the seed transaction.
+The local seed transaction created
+`b8650be38afef7ac8d1f14d7076fae2157272772`. Standard implementation begins
+after this SHA and bounded delivery uses it as the exact accepted base.
 
 ## Participants
 
