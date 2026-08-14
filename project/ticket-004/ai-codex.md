@@ -35,6 +35,19 @@ is allocated; the allocator's fail-closed refusal is correct.
 
 - Initialized the bounded ticket and recorded SESSION_EXECUTION_AUTHORIZATION
   from the request to execute this work.
+- Confirmed the external standalone guidance has no managed entry in the
+  Subactor artifact registry and bound the refresh to exact reviewed evidence.
+- Replaced the stale missing-route conclusion with structural completion after
+  Hub route `62fdd105` and durable regression `f59cc503`, while retaining a
+  live grant/revoke and Vault read-back canary as the operational boundary.
+- Added normative exact-state transport substitution: no retry storm, no stale
+  head rebinding and the same hosted checks, Validator identity and read-back.
+- Added fail-closed recovery for remotely merged tickets that still reserve a
+  local workstream: verify, governance-only close, then rerun the allocator;
+  never force-new or hand-create an ID.
+- Passed conformance, deterministic governance, diff hygiene and Platform
+  artifact build/check at 614/614 without changing the user's dirty Platform
+  fingerprint.
 
 ## Blockers
 

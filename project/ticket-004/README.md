@@ -3,7 +3,7 @@
 - **ID**: ticket-004
 - **Owner**: unresolved:human
 - **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Workflow state**: PUBLICATION
 - **Created**: 2026-08-14
 
 ## Goal and scope
@@ -24,17 +24,27 @@ from integrated main rather than bypassed with a new ticket.
 
 - [x] AC-01: The user's request to continue autonomously and update extracted
   conclusions records `SESSION_EXECUTION_AUTHORIZATION` for this bounded slice.
-- [ ] AC-02: The evidence basis binds the exact reviewed Hub route and durable
+- [x] AC-02: The evidence basis binds the exact reviewed Hub route and durable
   regression revisions without making them runtime dependencies.
-- [ ] AC-03: The standard distinguishes structural exact-reference completion
+- [x] AC-03: The standard distinguishes structural exact-reference completion
   from operational readiness and requires a live, secret-free canary receipt.
-- [ ] AC-04: A degraded control-plane transport may be substituted only with
+- [x] AC-04: A degraded control-plane transport may be substituted only with
   unchanged exact-head, hosted-check, identity and read-back guarantees; retry
   storms and policy bypass remain forbidden.
-- [ ] AC-05: A stale local workstream reservation after remote merge is
+- [x] AC-05: A stale local workstream reservation after remote merge is
   reconciled and closed from integrated main, never bypassed with force-new.
-- [ ] AC-06: Conformance, governance, diff hygiene and Subactor artifact build
+- [x] AC-06: Conformance, governance, diff hygiene and Subactor artifact build
   and check pass for the two-file guidance clarification.
+
+## Validation evidence
+
+- `python3 standard/conformance.py --all`: 4 positive variants; 15 adversarial
+  cases rejected; schema and grammar digests unchanged.
+- Deterministic governance: `GOV-PASS`, 0 errors and 0 warnings.
+- `git diff --check`: pass.
+- Platform artifact registry: 614 valid artifacts, 0 invalid and 0 drift.
+- Platform unstaged, staged and untracked fingerprints are identical before
+  and after artifact validation.
 
 ## Evidence basis
 
