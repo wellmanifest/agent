@@ -1,5 +1,8 @@
 # Roadmap
 
+- [ ] [ticket-004](project/ticket-004/README.md) — refresh structural versus
+  operational exact-reference readiness, quota-degraded transport and stale
+  workstream-reservation recovery rules. State: `IN_PROGRESS / EDIT`.
 - [x] [ticket-003](project/ticket-003/README.md) — codify complete autonomous
   credential-reference capability and bounded evidence-window rules.
 - [x] [ticket-002](project/ticket-002/README.md) — distil verified Diagit and

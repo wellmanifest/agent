@@ -1,0 +1,77 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-004",
+  "summary": "Refresh operational autonomy readiness rules",
+  "workstream": "integration",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-004/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "docs/ARCHITECTURE.md",
+    "docs/LOGIC_FLOW.md"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md",
+    "standard/**",
+    "VERSION",
+    "CHANGELOG.md"
+  ],
+  "stacks": [],
+  "dependsOn": ["ticket-003"],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "d871a33529e39ad872ea7de76b14847311ad2c25",
+    "targetBranch": "main",
+    "outcome": "Agent guidance reflects verified exact-reference route completion while requiring a live authority canary and preserving gates during transport and local-governance recovery",
+    "nonGoals": [
+      "Change the agent JSON Schema, grammar or document family",
+      "Read or exercise a credential value",
+      "Treat an HTTP regression as a live grant/revoke canary",
+      "Authorize retry storms, weaker transports or review bypass",
+      "Change Subactor runtime repositories or make them dependencies"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 25,
+    "budgets": {
+      "maxImplementationFiles": 2,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Keep agent v1 closed and update only guidance for structural-versus-operational credential readiness, equivalent fail-closed control transports and merged-ticket reservation reconciliation",
+      "components": [
+        {
+          "name": "agent-guidance",
+          "paths": ["docs/ARCHITECTURE.md", "docs/LOGIC_FLOW.md"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Revert the two guidance files while preserving ticket evidence and unchanged v1 schema and grammar"
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-06",
+        "commands": [
+          "python3 standard/conformance.py --all",
+          "./project/governance-check.sh --actor agent --base d871a33529e39ad872ea7de76b14847311ad2c25 --head HEAD",
+          "git diff --check",
+          "npm run artifacts:build",
+          "npm run artifacts:check"
+        ],
+        "evidence": "project/ticket-004/ai-codex-logs.txt"
+      }
+    ]
+  }
+}

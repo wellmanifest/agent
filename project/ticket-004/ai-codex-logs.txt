@@ -1,0 +1,12 @@
+2026-08-14 SESSION_EXECUTION_AUTHORIZATION: user requested autonomous
+continuation, extracted-conclusion updates and governed publication.
+2026-08-14 BASE: accepted standalone Agent main is
+d871a33529e39ad872ea7de76b14847311ad2c25; ticket-003 is DONE / DONE.
+2026-08-14 ARTIFACT_ROUTING: Subactor platform/config/artifact-registry.json
+contains no managed wellmanifest/agent guidance entry. The two external docs
+remain governed here; Platform artifact build/check is still required.
+2026-08-14 EVIDENCE: Hub route 62fdd105 -> 3bc723fe via Validator run
+31797279515; durable regression f59cc503 -> feb25484 via run 31798413692;
+GraphQL-zero publication preserved the same exact-head and trust gates through
+REST; stale ticket-017 reservation closed through PR #40/run 31797921804
+without force-new.
