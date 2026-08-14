@@ -38,3 +38,8 @@
 
 - Refreshed Inventory evidence to the exact head that passes PostgreSQL and the
   complete Linux/macOS/Windows Python 3.11/3.13 matrix.
+
+## [0.7.0] - 2026-08-14
+
+- Closed after merge of pull request #2 at
+  `bdcde39effd31bb6f09c6625e24c8e0676d53259`.
