@@ -21,3 +21,8 @@
   revocation proof on success and failure.
 - Added an adversarial conformance case for a bearer grant identifier persisted
   in a v1 document.
+
+## [0.4.0] - 2026-08-14
+
+- Refreshed the Inventory evidence to include its fail-closed, tenant-scoped
+  lookup for one exact credential reference without secret resolution.

@@ -28,8 +28,8 @@ rules below but are not runtime dependencies of the standard.
 The credential-authority refinement is additionally grounded in the clean
 Subactor credential-harvest connector revision
 `74df0673612f31712c13791b57030441f921b2bb`, the locally validated Inventory
-credential-reference handoff revision
-`8b559127b95c20fe0e02d20957df1837159454ac`, and the locally validated Control
+credential-reference handoff and tenant-scoped exact-lookup revision
+`ead9a678bd556da7ffb338bb168df0a0d90b4661`, and the locally validated Control
 ticket revision `d518444aae1634afc7f4b83e3e761509f7dbb069`.
 The observed Hub checkout was dirty and behind its remote-tracking branch, so
 it is not used as normative evidence.

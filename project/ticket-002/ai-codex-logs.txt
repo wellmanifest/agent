@@ -54,10 +54,11 @@ WORKSPACE LIFECYCLE
 CREDENTIAL AUTHORITY REFINEMENT
 - Credential-harvest connector: 74df0673612f31712c13791b57030441f921b2bb
   clean at origin/main.
-- Metadata inventory handoff: 8b559127b95c20fe0e02d20957df1837159454ac
-  PASS: 59 tests; exact origin-qualified references retained; dashboard/API
-  credential-bundle export removed. This local ticket branch is not a runtime
-  dependency of the standard.
+- Metadata inventory handoff: ead9a678bd556da7ffb338bb168df0a0d90b4661
+  PASS: 60 tests; exact origin-qualified references retained; tenant-scoped
+  exact metadata lookup fails closed; dashboard/API credential-bundle export
+  removed. This local ticket branch is not a runtime dependency of the
+  standard.
 - Control ticket implementation: d518444aae1634afc7f4b83e3e761509f7dbb069
   PASS: 1443/1443 complete and isolated-export tests; governance 0/0.
 - The observed Hub checkout at 018615f5c90870c4d7af2d228874dccab630446a

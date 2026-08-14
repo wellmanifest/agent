@@ -45,8 +45,9 @@ schema into `wellmanifest.agent/v1`.
   fail-closed issuance/revocation proof without changing the v1 document
   family.
 - Implemented and validated the Inventory-side exact-reference handoff while
-  removing its dashboard/API credential-bundle export path; all 59 unit tests
-  pass at `8b559127b95c20fe0e02d20957df1837159454ac`.
+  removing its dashboard/API credential-bundle export path and adding a
+  fail-closed tenant-scoped lookup for one exact reference; all 60 unit tests
+  pass at `ead9a678bd556da7ffb338bb168df0a0d90b4661`.
 
 ## Blockers
 

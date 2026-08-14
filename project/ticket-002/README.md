@@ -56,8 +56,8 @@ review, merge, tag, release, destructive action or secret access.
   passed its hosted CI and contribution-policy checks before this ticket.
 - Subactor's clean credential-harvest connector
   `74df0673612f31712c13791b57030441f921b2bb`, locally validated Inventory
-  credential-reference handoff `8b559127b95c20fe0e02d20957df1837159454ac`,
-  and locally validated Control ticket
+  credential-reference handoff and tenant-scoped exact lookup
+  `ead9a678bd556da7ffb338bb168df0a0d90b4661`, and locally validated Control ticket
   `d518444aae1634afc7f4b83e3e761509f7dbb069` establish the runtime grant
   boundary. The dirty, stale Hub checkout is excluded from normative evidence.
 - The Subactor artifact registry has no managed entry for these external
