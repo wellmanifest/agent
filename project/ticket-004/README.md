@@ -2,8 +2,8 @@
 
 - **ID**: ticket-004
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: PUBLICATION
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-14
 
 ## Goal and scope
@@ -45,6 +45,14 @@ from integrated main rather than bypassed with a new ticket.
 - Platform artifact registry: 614 valid artifacts, 0 invalid and 0 drift.
 - Platform unstaged, staged and untracked fingerprints are identical before
   and after artifact validation.
+
+## Delivery evidence
+
+- PR #6 froze exact head `6c4e3eca2f820a423f5b873e1b3778db10fe6d59`.
+- Validator run `31799560345` submitted trusted approval review `4937022633`
+  for that exact head and explicitly merged the pull request.
+- Merge commit `6f6e6562aad5c911f34b148d7ef70ae2601d33a3` has the same tree as the
+  reviewed head; the remote implementation branch was deleted.
 
 ## Evidence basis
 
