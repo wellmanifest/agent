@@ -25,17 +25,28 @@ The current evidence basis is Diagit `b6958c40598adcc44dd02e184bc7dc92325a90b9`
 and Doctor `1aed648d7c45588cf1e04d95ce315b64251c80bd`. These revisions support the
 rules below but are not runtime dependencies of the standard.
 
-The credential-authority refinement is additionally grounded in the locally
-validated Subactor credential-harvest connector exact-reference gate revision
-`184139579424bbc5ecaa8067f71b6ed6b3490147`, the locally validated Inventory
-credential-reference handoff and tenant-scoped exact-lookup revision
-`708f0d856aa2658f8793a6b85d4290d8536aab47`, and the locally validated Control
-ticket revision `d518444aae1634afc7f4b83e3e761509f7dbb069`.
-Clean Hub `origin/main` revision `c2d47d63c5a2c482acc4fe13a16837ed1d442f99`
-has grant-gated provider/origin harvest but no exact Inventory-reference HTTP
-endpoint. Ownership-only Hub PR 30 at
-`61f6b9422e45164d4561306816d452114465a4cd` removes a governance prerequisite;
-it is not treated as completed resolver evidence.
+The credential-authority refinement is additionally grounded in exact reviewed
+and merged Subactor revisions: Inventory `082e8fc954a0554458c4f08456e8e18009579d5d`
+(merge `1c6cdf5a1acee02ae1e754c3d6f12ea72a65c1e2`), Hub
+`1183d80b1460f8f1ad339ce7e224e8db3c02f3f8` (merge
+`485997c345ea1da19320eb5a384bbd8941a91d4f`), the credential-harvest connector
+`ae7f8e80419afebf28f2b77c3627e3984c5a9cac` (merge
+`f941dd9fdd8949d77b4808000caf05da09832dd6`) and Control
+`8dbbb1570bdb3abe6a2e458c3ec24b115327f398` (merge
+`cb611df46bbb99b1dba8b1f608eb231ba0e28321`). These revisions prove exact
+metadata selection, an internal password-manager resolver, connector-side
+selection proof and controller-owned issue/revoke behavior respectively.
+
+They do not yet prove one callable end-to-end capability. The connector sends
+an exact selector only to `/v1/commands/harvest-reference`, while the accepted
+Hub change explicitly excludes any new HTTP or MCP endpoint. An internal
+resolver is not route-registration evidence, and the legacy broad harvest must
+not be used as a fallback. The evidence-window rule is separately grounded in
+Core `bf041fc6a9d72cde6e7757d14dac8d5685639676` (merge
+`16b259d4ca42c1b10888296e56c16fc3619fa943`), which reproduced a false
+coverage regression caused by an asymmetric ten-commit extraction window and
+removed it by binding the maximum supported bounded window of 100 commits.
+All of these revisions are evidence, not runtime dependencies of the standard.
 
 Composition:
 
@@ -131,6 +142,26 @@ flowchart LR
     substitute for revocation. Durable receipts and operational events MAY
     retain a non-replayable authority projection and immutable evidence, but
     MUST NOT retain bearer identifiers or credential values.
+20. An exact credential-reference capability is complete only when compatible,
+    registered hops exist for the exact metadata query, resolver, public runtime
+    route, connector selection proof, controller-owned issue/revoke lifecycle
+    and Vault write/read-back. An internal function, unit test or route consumer
+    MUST NOT be reported as proof that a missing provider route exists. A missing
+    or revision-incompatible hop is `blocked`, and MUST NOT fall back to a
+    broader lookup or legacy harvest.
+21. Secret-bearing configuration MUST be resolved outside the LLM context from
+    an exact password-manager/Vault reference under live authority. Inventory
+    supplies metadata and stable selectors only. The service credentials needed
+    to contact Inventory, Hub or Vault form a separate bootstrap root and MUST
+    come from a protected file, system credential facility or equivalent
+    non-circular secret boundary; they MUST NOT depend on the unresolved path
+    they bootstrap or be persisted in plans, tickets, logs or receipts.
+22. A decision based on repository history MUST bind the extractor and tool
+    revision, exact base and head, bounded evidence window and whether relevant
+    evidence was truncated. Both sides MUST use a semantically equivalent
+    window. If required claims may have been evicted, the result is
+    `inconclusive` or fail-closed, not a semantic regression. A larger declared
+    bounded window MAY be used; an implicit default or unbounded scan MUST NOT.
 
 ## Trust boundaries
 
@@ -148,6 +179,9 @@ flowchart LR
 | Credential inventory | Provider/account metadata and stable secret references | Credential values, broad secret export, treating presence as authority |
 | Runtime authority gate | Exact-route grant issue, bounded dispatch and revocation proof | Grants persisted in plans, self-authorizing connectors, success without revoke proof |
 | Credential resolver or Hub | Resolve one granted password-manager/vault reference into bounded runtime use | Unscoped lookup, secret material returned to the LLM, logs or receipts |
+| Capability/route registry | Compatible provider and consumer route revisions plus canary evidence | Inferring a public route from an internal function or consumer-only test |
+| Bootstrap credential boundary | Minimum service identity needed to reach Inventory, Hub and Vault | Circular lookup through the unresolved workload credential path |
+| Historical evidence extractor | Tool revision, exact base/head, symmetric bounded window and truncation state | Comparing asymmetric or silently truncated claim sets |
 
 ## Lane ownership
 
