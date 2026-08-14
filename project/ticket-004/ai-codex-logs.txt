@@ -22,3 +22,12 @@ valid, 0 invalid and 0 drift. Platform dirty-state hashes remained identical:
 unstaged 3eb3311f9292b78f9b22de2b35ddcc99a8bac1a625d5ee310905ea7c0710ba4b,
 staged ec6f5ce3628f3d5479a2c1eec947551d65be4a00aebedb6c948786e0668addb6,
 untracked e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.
+2026-08-14 PUBLICATION: PR #6 froze exact head
+6c4e3eca2f820a423f5b873e1b3778db10fe6d59; hosted governance passed. REST
+preserved the exact-state freeze while shared GraphQL quota was exhausted.
+Validator run 31799560345 submitted trusted approval review 4937022633 and
+explicitly merged the pull request.
+2026-08-14 MERGE: merge commit
+6f6e6562aad5c911f34b148d7ef70ae2601d33a3 is tree-identical to the reviewed
+head. GitHub deleted the remote implementation branch; its clean integrated
+worktree and local branch were removed before this closure.

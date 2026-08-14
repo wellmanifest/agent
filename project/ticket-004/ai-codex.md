@@ -48,6 +48,11 @@ is allocated; the allocator's fail-closed refusal is correct.
 - Passed conformance, deterministic governance, diff hygiene and Platform
   artifact build/check at 614/614 without changing the user's dirty Platform
   fingerprint.
+- Published PR #6 at exact head `6c4e3ec`; Validator run `31799560345`
+  approved that SHA as review `4937022633` and explicitly merged the identical
+  tree as `6f6e656`.
+- Verified remote implementation-branch deletion and removed the clean,
+  fully integrated implementation worktree and local branch.
 
 ## Blockers
 
