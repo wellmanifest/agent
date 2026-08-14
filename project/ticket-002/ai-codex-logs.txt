@@ -55,11 +55,12 @@ CREDENTIAL AUTHORITY REFINEMENT
 - Credential-harvest connector: 184139579424bbc5ecaa8067f71b6ed6b3490147
   PASS: 16 focused tests and 94/94 isolated repository verification; exact
   references use a fail-closed versioned endpoint and require selection proof.
-- Metadata inventory handoff: ead9a678bd556da7ffb338bb168df0a0d90b4661
-  PASS: 60 tests; exact origin-qualified references retained; tenant-scoped
-  exact metadata lookup fails closed; dashboard/API credential-bundle export
-  removed. This local ticket branch is not a runtime dependency of the
-  standard.
+- Metadata inventory handoff: 708f0d856aa2658f8793a6b85d4290d8536aab47
+  PASS: 60 tests locally and the complete PostgreSQL plus Python 3.11/3.13
+  matrix on Linux, macOS and Windows; exact origin-qualified references
+  retained; tenant-scoped exact metadata lookup fails closed; dashboard/API
+  credential-bundle export removed. This branch is not a runtime dependency of
+  the standard.
 - Control ticket implementation: d518444aae1634afc7f4b83e3e761509f7dbb069
   PASS: 1443/1443 complete and isolated-export tests; governance 0/0.
 - Clean Hub origin/main at c2d47d63c5a2c482acc4fe13a16837ed1d442f99

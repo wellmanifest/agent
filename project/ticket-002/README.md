@@ -57,7 +57,7 @@ review, merge, tag, release, destructive action or secret access.
 - Subactor's locally validated credential-harvest connector exact-reference
   gate `184139579424bbc5ecaa8067f71b6ed6b3490147`, locally validated Inventory
   credential-reference handoff and tenant-scoped exact lookup
-  `ead9a678bd556da7ffb338bb168df0a0d90b4661`, and locally validated Control ticket
+  `708f0d856aa2658f8793a6b85d4290d8536aab47`, and locally validated Control ticket
   `d518444aae1634afc7f4b83e3e761509f7dbb069` establish the runtime grant
   boundary. Clean Hub `origin/main`
   `c2d47d63c5a2c482acc4fe13a16837ed1d442f99` lacks the exact-reference endpoint;

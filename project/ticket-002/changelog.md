@@ -33,3 +33,8 @@
   proof to the evidence basis.
 - Distinguished the green Hub ownership prerequisite from the still-missing
   exact-reference runtime resolver.
+
+## [0.6.0] - 2026-08-14
+
+- Refreshed Inventory evidence to the exact head that passes PostgreSQL and the
+  complete Linux/macOS/Windows Python 3.11/3.13 matrix.

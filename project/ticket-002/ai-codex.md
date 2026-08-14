@@ -47,7 +47,8 @@ schema into `wellmanifest.agent/v1`.
 - Implemented and validated the Inventory-side exact-reference handoff while
   removing its dashboard/API credential-bundle export path and adding a
   fail-closed tenant-scoped lookup for one exact reference; all 60 unit tests
-  pass at `ead9a678bd556da7ffb338bb168df0a0d90b4661`.
+  and the full cross-platform/PostgreSQL CI matrix pass at
+  `708f0d856aa2658f8793a6b85d4290d8536aab47`.
 - Added and validated a connector-side exact-reference contract that uses a
   distinct fail-closed Hub endpoint and requires exact selection proof, while
   preserving the legacy path only when no reference is selected.

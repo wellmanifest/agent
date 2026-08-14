@@ -29,7 +29,7 @@ The credential-authority refinement is additionally grounded in the locally
 validated Subactor credential-harvest connector exact-reference gate revision
 `184139579424bbc5ecaa8067f71b6ed6b3490147`, the locally validated Inventory
 credential-reference handoff and tenant-scoped exact-lookup revision
-`ead9a678bd556da7ffb338bb168df0a0d90b4661`, and the locally validated Control
+`708f0d856aa2658f8793a6b85d4290d8536aab47`, and the locally validated Control
 ticket revision `d518444aae1634afc7f4b83e3e761509f7dbb069`.
 Clean Hub `origin/main` revision `c2d47d63c5a2c482acc4fe13a16837ed1d442f99`
 has grant-gated provider/origin harvest but no exact Inventory-reference HTTP
