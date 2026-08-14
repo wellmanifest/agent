@@ -44,6 +44,9 @@ schema into `wellmanifest.agent/v1`.
 - Required runtime-only grant injection, success/failure revocation and
   fail-closed issuance/revocation proof without changing the v1 document
   family.
+- Implemented and validated the Inventory-side exact-reference handoff while
+  removing its dashboard/API credential-bundle export path; all 59 unit tests
+  pass at `8b559127b95c20fe0e02d20957df1837159454ac`.
 
 ## Blockers
 

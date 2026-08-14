@@ -55,9 +55,10 @@ review, merge, tag, release, destructive action or secret access.
 - Doctor `origin/main` at `1aed648d7c45588cf1e04d95ce315b64251c80bd`
   passed its hosted CI and contribution-policy checks before this ticket.
 - Subactor's clean credential-harvest connector
-  `74df0673612f31712c13791b57030441f921b2bb`, clean metadata inventory
-  `8f3a0a5fb5763bc43e7981ab3418e6e53f2aadae`, and locally validated Control
-  ticket `d518444aae1634afc7f4b83e3e761509f7dbb069` establish the runtime grant
+  `74df0673612f31712c13791b57030441f921b2bb`, locally validated Inventory
+  credential-reference handoff `8b559127b95c20fe0e02d20957df1837159454ac`,
+  and locally validated Control ticket
+  `d518444aae1634afc7f4b83e3e761509f7dbb069` establish the runtime grant
   boundary. The dirty, stale Hub checkout is excluded from normative evidence.
 - The Subactor artifact registry has no managed entry for these external
   source paths or this standalone standard; Platform artifact build and check
