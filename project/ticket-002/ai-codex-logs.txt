@@ -50,3 +50,24 @@ WORKSPACE LIFECYCLE
   --workspace-root workspace:wellmanifest
   --allow workspace:wellmanifest/dsl-ticket-006-node24 --format json
   PASS: 0 findings; preserved the unrelated active DSL worktree explicitly.
+
+CREDENTIAL AUTHORITY REFINEMENT
+- Credential-harvest connector: 74df0673612f31712c13791b57030441f921b2bb
+  clean at origin/main.
+- Metadata inventory: 8f3a0a5fb5763bc43e7981ab3418e6e53f2aadae
+  clean at origin/main.
+- Control ticket implementation: d518444aae1634afc7f4b83e3e761509f7dbb069
+  PASS: 1443/1443 complete and isolated-export tests; governance 0/0.
+- The observed Hub checkout at 018615f5c90870c4d7af2d228874dccab630446a
+  was dirty and 67 commits behind origin/main; excluded from normative evidence.
+- python3 standard/conformance.py --all
+  PASS: bearer-grant-in-document rejected; schema and grammar digests unchanged.
+- docker compose run --build --rm conformance
+  PASS: rebuilt conformance image; bearer-grant-in-document rejected.
+- ./project/governance-check.sh --actor agent
+  PASS: 0 errors, 0 warnings.
+- git diff --check
+  PASS.
+- Subactor Platform npm run artifacts:build / artifacts:check
+  PASS: 614 artifacts, 614 valid, 0 invalid, drift [], invalid []. The Platform
+  checkout already contained unrelated changes and remains outside this diff.

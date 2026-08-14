@@ -39,6 +39,11 @@ schema into `wellmanifest.agent/v1`.
   and immutable-evidence rules without changing the v1 schema or grammar.
 - Passed local and rebuilt networkless Docker conformance, governance, diff
   hygiene and Subactor artifact-registry build/check.
+- Distilled the verified credential path into a metadata-only inventory,
+  controller-owned just-in-time grant and exact-reference resolver boundary.
+- Required runtime-only grant injection, success/failure revocation and
+  fail-closed issuance/revocation proof without changing the v1 document
+  family.
 
 ## Blockers
 

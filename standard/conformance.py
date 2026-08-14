@@ -475,6 +475,9 @@ def run_all() -> dict[str, Any]:
     bad["token"] = "redacted-canary"
     cases.append(("inline-token", lambda: validate_request(c, bad)))
     bad = copy.deepcopy(request)
+    bad["grant_id"] = "runtime-grant-canary"
+    cases.append(("bearer-grant-in-document", lambda: validate_request(c, bad)))
+    bad = copy.deepcopy(request)
     bad["mergeCommand"] = "gh pr merge"
     cases.append(("merge-command", lambda: validate_request(c, bad)))
     bad = copy.deepcopy(request)

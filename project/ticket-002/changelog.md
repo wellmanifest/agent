@@ -12,3 +12,12 @@
 - Added diagnostic finding, read-model, plan and tamper-evident operational
   evidence invariants.
 - Completed local, Docker, governance and artifact-registry validation.
+
+## [0.3.0] - 2026-08-14
+
+- Clarified that credential inventory is metadata-only and exact secret
+  references are resolved only after a controller-owned runtime authority gate.
+- Required just-in-time, exact-route grant binding, runtime-only injection and
+  revocation proof on success and failure.
+- Added an adversarial conformance case for a bearer grant identifier persisted
+  in a v1 document.

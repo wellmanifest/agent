@@ -25,6 +25,14 @@ The current evidence basis is Diagit `b6958c40598adcc44dd02e184bc7dc92325a90b9`
 and Doctor `1aed648d7c45588cf1e04d95ce315b64251c80bd`. These revisions support the
 rules below but are not runtime dependencies of the standard.
 
+The credential-authority refinement is additionally grounded in the clean
+Subactor credential-harvest connector revision
+`74df0673612f31712c13791b57030441f921b2bb`, the clean metadata inventory
+revision `8f3a0a5fb5763bc43e7981ab3418e6e53f2aadae`, and the locally validated
+Control ticket revision `d518444aae1634afc7f4b83e3e761509f7dbb069`.
+The observed Hub checkout was dirty and behind its remote-tracking branch, so
+it is not used as normative evidence.
+
 Composition:
 
 - `wellmanifest/dsl` constrains agent requests;
@@ -100,6 +108,25 @@ flowchart LR
     observed head plus current review/check state where applicable. Execution
     requires an external grant, independent validation and exact-state
     read-back before a successful receipt.
+17. A credential inventory MUST remain metadata-only. It MAY expose provider
+    and account identity, presence, health and a stable password-manager or
+    vault entry reference, but MUST NOT expose a credential value or a broad
+    secret-export operation. A resolver or Hub MAY translate only the exact
+    selected reference after the runtime authority gate succeeds.
+18. A usable credential grant MUST be issued just in time by the domain
+    controller after ticket readiness and exact-route validation. It MUST bind
+    the runtime subject, exact operation and route, provider resource, source
+    ticket or intent, selected vault entry and a short expiry. A declarative
+    `grantRef` may identify the external authorization record, but the inert
+    plan MUST NOT persist a bearer grant identifier. A connector or executor
+    MUST NOT issue authority for itself.
+19. The controller MAY inject an opaque grant or lease identifier only into a
+    copied runtime payload. It MUST request revocation after success and every
+    dispatch failure; missing issuance or revocation proof MUST fail closed and
+    MUST prevent a successful receipt. Expiry is a safety bound, not a
+    substitute for revocation. Durable receipts and operational events MAY
+    retain a non-replayable authority projection and immutable evidence, but
+    MUST NOT retain bearer identifiers or credential values.
 
 ## Trust boundaries
 
@@ -114,6 +141,9 @@ flowchart LR
 | Domain controller | Granted mutation and exact-state read-back | Treating a finding or generated plan as authority |
 | Receipt store | Redacted outcome hashes | Tokens, argv, merge commands |
 | Operational event store | Canonical append-only hashes and evidence digests | Tampered chains, missing runbooks, silent legacy rewrites |
+| Credential inventory | Provider/account metadata and stable secret references | Credential values, broad secret export, treating presence as authority |
+| Runtime authority gate | Exact-route grant issue, bounded dispatch and revocation proof | Grants persisted in plans, self-authorizing connectors, success without revoke proof |
+| Credential resolver or Hub | Resolve one granted password-manager/vault reference into bounded runtime use | Unscoped lookup, secret material returned to the LLM, logs or receipts |
 
 ## Lane ownership
 
