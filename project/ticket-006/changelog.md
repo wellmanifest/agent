@@ -10,3 +10,5 @@
   fail-closed failure routing; conformance digests remain unchanged.
 - Recorded the unrelated Platform `AGENTS.md` artifact-version drift without
   modifying or absorbing that external workstream.
+- Recorded exact-head PR #10 publication, Validator run `31815844335`,
+  identical-tree integration and governance-only closure from `main`.
