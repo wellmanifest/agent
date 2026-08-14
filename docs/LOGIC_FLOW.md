@@ -226,6 +226,26 @@ Repair and validator identities stay distinct. The scheduler that holds a
 GitHub token does not execute the untrusted PR head; a networkless executor
 without secrets may run tests.
 
+## Placement before profile binding
+
+```mermaid
+flowchart LR
+    Request[Requested agent capability] --> Shape[Declare SHAPE]
+    Shape --> Home{HOME explicit?}
+    Home -->|yes| Runtime[Bind repository and runtime owner]
+    Home -->|no| Wait[WAIT_FOR_APPROVAL]
+    Packs[Versioned Wellmanifest packs] --> Adopt[Declare ADOPT]
+    Adopt --> Runtime
+    Wait --> Runtime
+    Runtime --> Profile[Bind agentRef and profile]
+```
+
+HOME answers who owns and operates the artifact; ADOPT answers which standards
+constrain it. A Wellmanifest pack may be adopted by a Subactor or Semcod
+runtime without moving that runtime into the Wellmanifest organization. The
+phrase "w ramach wellmanifest" is insufficient placement evidence and must
+leave HOME unresolved until an explicit approval supplies it.
+
 ## Failure routing
 
 | Failure | Required state/outcome | Safe next action |
@@ -249,6 +269,7 @@ without secrets may run tests.
 | Active claim without `claimedUntil` | `failed` | expire and re-claim |
 | Repairing without SHA | `failed` | stop before apply |
 | Receipt stores credentials | `failed` | redact and re-issue |
+| Runtime HOME inferred from an adopted Wellmanifest pack | `blocked` | keep HOME unresolved and obtain an explicit placement decision |
 
 No failure path stores a lease secret or turns a transport-level success into
 a merged product change.

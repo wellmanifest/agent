@@ -1,0 +1,7 @@
+2026-08-14 ticket-005 validation
+- Internal standard source: wellmanifest/new-project placement vocabulary.
+- python3 standard/conformance.py --all: ok; 4 positive, 15 adversarial rejected.
+- ./project/governance-check.sh: GOV-PASS; 0 errors, 0 warnings.
+- git diff --check: pass.
+- standard/** compared with accepted base: unchanged.
+- Subactor artifact registry lookup: no managed wellmanifest/agent entry.

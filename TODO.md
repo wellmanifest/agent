@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] [ticket-005](project/ticket-005/README.md) — separate runtime HOME
+  ownership from the Wellmanifest standards an agent adopts.
 - [x] [ticket-004](project/ticket-004/README.md) — refresh structural versus
   operational exact-reference readiness, quota-degraded transport and stale
   workstream-reservation recovery rules. State: `DONE / DONE`; PR #6 merged as

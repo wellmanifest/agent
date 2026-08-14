@@ -62,6 +62,23 @@ Composition:
 - `account-runtime` may later bind identity;
 - `saas-lifecycle` may later bind an `agentRef` as an operational element.
 
+### HOME versus ADOPT placement
+
+Placement and conformance are separate declarations. `HOME` names the
+organization that owns the repository or runtime; `SHAPE` is `domain_pack`,
+`runtime_service` or `both`; `runtimeOwner` names who operates a CLI or daemon;
+and `ADOPT` lists the versioned Wellmanifest packs the artifact follows.
+Adopting `wellmanifest/agent`, `wellmanifest/new-project` or another pack does
+not transfer runtime ownership to Wellmanifest.
+
+Within this repository family, Wellmanifest is HOME for standards and domain
+packs. Product agent CLIs, daemons and runtime services are HOME in a runtime
+organization such as Subactor or Semcod and ADOPT the applicable Wellmanifest
+packs. Phrases such as "w ramach wellmanifest" or "within Wellmanifest
+standardization" declare ADOPT intent only. If HOME remains ambiguous, the
+planner MUST ask at `WAIT_FOR_APPROVAL`; it MUST NOT infer a deployment owner
+from the named standard.
+
 ```mermaid
 flowchart LR
     Profile[Versioned agent profile] --> Claim[Exclusive claim]
@@ -186,6 +203,11 @@ flowchart LR
     governance-only closure from integrated default-branch state and rerun the
     allocator. It MUST NOT use force-new, hand-create a ticket ID or overwrite
     the stale reservation.
+25. Agent placement MUST distinguish HOME and runtime ownership from adopted
+    standards. A `runtime_service` MUST NOT be assigned HOME `wellmanifest`
+    merely because it adopts a Wellmanifest pack or was requested "within
+    Wellmanifest standardization". Ambiguous placement remains unresolved
+    until an explicit decision; it MUST NOT be guessed by an LLM.
 
 ## Trust boundaries
 
@@ -208,6 +230,7 @@ flowchart LR
 | Historical evidence extractor | Tool revision, exact base/head, symmetric bounded window and truncation state | Comparing asymmetric or silently truncated claim sets |
 | Control-plane API transport | Exact-state freeze, hosted checks, independent dispatch and read-back | Retry storms, stale-head rebinding or weaker review identity |
 | Ticket/workstream reservation | One active local scope until integrated governance closure | Force-new bypass, hand-allocated IDs or inferred remote closure |
+| Placement resolver | HOME, SHAPE, runtime owner and adopted pack references | Treating ADOPT as repository ownership or inferring HOME from a standard name |
 
 ## Lane ownership
 
