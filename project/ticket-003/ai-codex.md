@@ -52,6 +52,11 @@ create a false regression even when the repository state remains conformant.
   The Platform dirty-checkout fingerprint was identical before and after.
 - Transitioned the still-active ticket to `PUBLICATION` for exact-head hosted
   governance and independent Validator review.
+- Independent Validator run `31788708818` accepted exact head
+  `61cfc065bcc04adc4bccb8b61b1ecfbcab7826fd`; pull request #4 was merged as
+  `51727fa68518aaf50237109d23a0440279c15e4d`.
+- Closed the ticket only from the integrated default branch in this separate
+  governance-only change.
 
 ## Blockers
 
