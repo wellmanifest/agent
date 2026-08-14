@@ -13,3 +13,8 @@
 - Platform npm run artifacts:build: written=false; 614/615 valid
 - Platform npm run artifacts:check: unrelated pre-existing AGENTS.md
   declared_version_not_incremented/version:1 and content drift; worktree clean
+- Agent PR #10 head: b74b48869e574cbbd6280a819e971a724fde7386
+- Validator run 31815844335, review 4938917281: exact-head APPROVED and merged
+- Agent merge: 6e50d1245495d4b1c62b7c1164d67b470d95f63c
+- Exact head/merge/origin-main tree: 238e1bc30d848a4ec2e88ce8734d7301d4faec50
+- Remote ticket/006-real-work-identity branch deleted after merge

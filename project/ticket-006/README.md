@@ -2,8 +2,8 @@
 
 - **ID**: ticket-006
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: PUBLICATION
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-14
 
 ## Goal and scope
@@ -56,6 +56,15 @@ issuer/resolver remain fail-closed until policy supplies one.
 - Doctor Agent has no new-project ticket allocator, active ticket directories,
   branch protection or ruleset that could supply that identifier. Inventing
   one would make the approval binding non-recomputable.
+
+## Delivery evidence
+
+- PR #10 froze exact head `b74b48869e574cbbd6280a819e971a724fde7386`.
+- Validator run `31815844335` submitted trusted approval review `4938917281`
+  for that exact head and explicitly merged the pull request.
+- Merge commit `6e50d1245495d4b1c62b7c1164d67b470d95f63c` has the same
+  `238e1bc30d848a4ec2e88ce8734d7301d4faec50` tree as the reviewed
+  head and `origin/main`; the remote implementation branch was deleted.
 
 ## Participants
 
