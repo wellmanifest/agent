@@ -1,0 +1,80 @@
+2026-08-14 ticket-002 validation evidence
+
+SOURCE OBSERVATION
+- Diagit origin/main: b6958c40598adcc44dd02e184bc7dc92325a90b9
+- Detached read-only worktree: workspace:subactor/.worktrees/diagit-standard-evidence
+- diagit/.venv/bin/python -m pytest -q
+  PASS: 109 passed
+- diagit/.venv/bin/ruff check src tests
+  PASS
+- diagit/.venv/bin/mypy src
+  PASS
+- Doctor origin/main: 1aed648d7c45588cf1e04d95ce315b64251c80bd
+- Hosted CI: https://github.com/subactor/doctor-agent/actions/runs/31775225109
+  PASS
+- Contribution policy: https://github.com/subactor/doctor-agent/actions/runs/31775225076
+  PASS
+
+AGENT STANDARD
+- python3 standard/conformance.py --all
+  PASS: schema and grammar digests unchanged; repair-control-plane rejected
+- docker compose run --build --rm conformance
+  PASS: rebuilt image; network_mode none; read_only true; repair-control-plane rejected
+- python3 -m py_compile standard/conformance.py
+  PASS
+- git diff --check
+  PASS
+- ./project/governance-check.sh --actor agent
+  PASS: 0 errors, 0 warnings
+
+SUBACTOR ARTIFACT REGISTRY
+- npm run artifacts:build
+  PASS: 614 artifacts, 614 valid, 0 invalid
+- npm run artifacts:check
+  PASS: drift [], invalid []
+- No managed registry entry was found for the external Diagit/Doctor source
+  paths or the standalone agent repository. The generated Platform registry
+  remains outside this ticket and is not included in its commit.
+
+SELF-REVIEW
+- Verified the implementation diff contains exactly three implementation files.
+- Verified standard/agent.schema.json and standard/agent.v1.gbnf are unchanged.
+- Corrected the recorded Diagit evidence SHA against origin/main before commit.
+
+WORKSPACE LIFECYCLE
+- Removed the owned clean detached Diagit evidence worktree after verifying its
+  HEAD was reachable from origin/main; pruned its Git metadata.
+- Dry-run verified and pruned four stale Git worktree metadata entries whose
+  /tmp paths no longer existed; no working files or branches were removed.
+- python3 .governance/workspace_lifecycle_check.py
+  --workspace-root workspace:wellmanifest
+  --allow workspace:wellmanifest/dsl-ticket-006-node24 --format json
+  PASS: 0 findings; preserved the unrelated active DSL worktree explicitly.
+
+CREDENTIAL AUTHORITY REFINEMENT
+- Credential-harvest connector: 184139579424bbc5ecaa8067f71b6ed6b3490147
+  PASS: 16 focused tests and 94/94 isolated repository verification; exact
+  references use a fail-closed versioned endpoint and require selection proof.
+- Metadata inventory handoff: 708f0d856aa2658f8793a6b85d4290d8536aab47
+  PASS: 60 tests locally and the complete PostgreSQL plus Python 3.11/3.13
+  matrix on Linux, macOS and Windows; exact origin-qualified references
+  retained; tenant-scoped exact metadata lookup fails closed; dashboard/API
+  credential-bundle export removed. This branch is not a runtime dependency of
+  the standard.
+- Control ticket implementation: d518444aae1634afc7f4b83e3e761509f7dbb069
+  PASS: 1443/1443 complete and isolated-export tests; governance 0/0.
+- Clean Hub origin/main at c2d47d63c5a2c482acc4fe13a16837ed1d442f99
+  has no exact-reference endpoint. Ownership-only PR 30 at
+  61f6b9422e45164d4561306816d452114465a4cd passed verify and governance but is
+  not runtime resolver evidence and has no trusted review.
+- python3 standard/conformance.py --all
+  PASS: bearer-grant-in-document rejected; schema and grammar digests unchanged.
+- docker compose run --build --rm conformance
+  PASS: rebuilt conformance image; bearer-grant-in-document rejected.
+- ./project/governance-check.sh --actor agent
+  PASS: 0 errors, 0 warnings.
+- git diff --check
+  PASS.
+- Subactor Platform npm run artifacts:build / artifacts:check
+  PASS: 614 artifacts, 614 valid, 0 invalid, drift [], invalid []. The Platform
+  checkout already contained unrelated changes and remains outside this diff.

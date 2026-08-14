@@ -1,0 +1,89 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-002",
+  "summary": "Distill diagnostic agent evidence rules",
+  "workstream": "integration",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P2",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-002/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "standard/conformance.py",
+    "docs/**"
+  ],
+  "forbiddenPaths": ["project/ticket-*/user-*.md"],
+  "stacks": ["docker"],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "932a2da4597c1d8d142e2ee8867a11a8b598083c",
+    "targetBranch": "main",
+    "outcome": "A compatible agent v1 clarification for diagnostic evidence, control-plane observation, tamper-evident operational receipts and controller-owned credential authority.",
+    "nonGoals": [
+      "Change the agent JSON Schema or request grammar",
+      "Add a finding or operational-log document variant",
+      "Make Diagit or Doctor a runtime dependency",
+      "Authorize a finding, plan, pull-request merge or control-plane mutation",
+      "Make inventory a secret store or expose broad password-manager export",
+      "Rewrite legacy evidence or event streams"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 30,
+    "budgets": {
+      "maxImplementationFiles": 3,
+      "maxAffectedComponents": 2,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Keep the closed v1 document family unchanged; clarify executable target semantics, domain-owned diagnostic evidence and controller-owned just-in-time credential authority.",
+      "components": [
+        {
+          "name": "semantic-conformance",
+          "paths": ["standard/conformance.py"]
+        },
+        {
+          "name": "diagnostic-guidance",
+          "paths": ["docs/ARCHITECTURE.md", "docs/LOGIC_FLOW.md"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [
+        "Clarify existing v1 target semantics, referenced-evidence invariants and runtime-only bearer-grant handling without changing document shape"
+      ],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Revert the three implementation files while preserving ticket evidence and the unchanged v1 schema and grammar."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-02",
+        "commands": ["python3 standard/conformance.py --all"],
+        "evidence": "project/ticket-002/ai-codex-logs.txt"
+      },
+      {
+        "criterion": "AC-05",
+        "commands": [
+          "docker compose run --build --rm conformance",
+          "./project/governance-check.sh --actor agent",
+          "git diff --check",
+          "npm run artifacts:build",
+          "npm run artifacts:check"
+        ],
+        "evidence": "project/ticket-002/ai-codex-logs.txt"
+      },
+      {
+        "criterion": "AC-06",
+        "commands": ["python3 standard/conformance.py --all"],
+        "evidence": "Conformance rejects a bearer grant identifier persisted in a v1 document"
+      }
+    ]
+  }
+}
