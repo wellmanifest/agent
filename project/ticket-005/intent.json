@@ -1,0 +1,75 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-005",
+  "summary": "Separate agent standard HOME from adopted packs",
+  "workstream": "integration",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P2",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-005/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "docs/ARCHITECTURE.md",
+    "docs/LOGIC_FLOW.md"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md",
+    "standard/**",
+    "VERSION",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "212b0332f83f54cdfbf0b8020698d3e853bb74fc",
+    "targetBranch": "main",
+    "outcome": "Agent guidance separates runtime HOME ownership from adopted Wellmanifest packs without changing the closed v1 contract",
+    "nonGoals": [
+      "Change the agent JSON Schema, grammar or document variants",
+      "Relocate any repository or deploy a runtime service",
+      "Infer a repository owner without an explicit placement decision",
+      "Change Subactor runtime code or access credentials"
+    ],
+    "complexity": "XS",
+    "estimatedMinutes": 15,
+    "budgets": {
+      "maxImplementationFiles": 2,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Keep agent v1 closed and update only architecture and lifecycle guidance with the existing HOME-versus-ADOPT vocabulary",
+      "components": [
+        {
+          "name": "agent-guidance",
+          "paths": ["docs/ARCHITECTURE.md", "docs/LOGIC_FLOW.md"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Revert the two guidance additions while preserving ticket evidence and unchanged v1 schema and grammar"
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-05",
+        "commands": [
+          "python3 standard/conformance.py --all",
+          "./project/governance-check.sh",
+          "git diff --check"
+        ],
+        "evidence": "project/ticket-005/ai-codex-logs.txt"
+      }
+    ]
+  }
+}
