@@ -54,12 +54,15 @@ review, merge, tag, release, destructive action or secret access.
   in a detached read-only worktree.
 - Doctor `origin/main` at `1aed648d7c45588cf1e04d95ce315b64251c80bd`
   passed its hosted CI and contribution-policy checks before this ticket.
-- Subactor's clean credential-harvest connector
-  `74df0673612f31712c13791b57030441f921b2bb`, locally validated Inventory
+- Subactor's locally validated credential-harvest connector exact-reference
+  gate `184139579424bbc5ecaa8067f71b6ed6b3490147`, locally validated Inventory
   credential-reference handoff and tenant-scoped exact lookup
   `ead9a678bd556da7ffb338bb168df0a0d90b4661`, and locally validated Control ticket
   `d518444aae1634afc7f4b83e3e761509f7dbb069` establish the runtime grant
-  boundary. The dirty, stale Hub checkout is excluded from normative evidence.
+  boundary. Clean Hub `origin/main`
+  `c2d47d63c5a2c482acc4fe13a16837ed1d442f99` lacks the exact-reference endpoint;
+  ownership-only Hub PR 30 at `61f6b9422e45164d4561306816d452114465a4cd`
+  is therefore not treated as completed resolver evidence.
 - The Subactor artifact registry has no managed entry for these external
   source paths or this standalone standard; Platform artifact build and check
   remain required after the managed text edits.

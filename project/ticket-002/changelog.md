@@ -26,3 +26,10 @@
 
 - Refreshed the Inventory evidence to include its fail-closed, tenant-scoped
   lookup for one exact credential reference without secret resolution.
+
+## [0.5.0] - 2026-08-14
+
+- Added the connector's versioned exact-reference endpoint gate and selection
+  proof to the evidence basis.
+- Distinguished the green Hub ownership prerequisite from the still-missing
+  exact-reference runtime resolver.

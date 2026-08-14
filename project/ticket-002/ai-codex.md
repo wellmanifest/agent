@@ -48,6 +48,12 @@ schema into `wellmanifest.agent/v1`.
   removing its dashboard/API credential-bundle export path and adding a
   fail-closed tenant-scoped lookup for one exact reference; all 60 unit tests
   pass at `ead9a678bd556da7ffb338bb168df0a0d90b4661`.
+- Added and validated a connector-side exact-reference contract that uses a
+  distinct fail-closed Hub endpoint and requires exact selection proof, while
+  preserving the legacy path only when no reference is selected.
+- Confirmed that current Hub `origin/main` still lacks that endpoint; recorded
+  its green ownership prerequisite separately without claiming a finished
+  resolver.
 
 ## Blockers
 

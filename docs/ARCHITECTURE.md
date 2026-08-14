@@ -25,14 +25,17 @@ The current evidence basis is Diagit `b6958c40598adcc44dd02e184bc7dc92325a90b9`
 and Doctor `1aed648d7c45588cf1e04d95ce315b64251c80bd`. These revisions support the
 rules below but are not runtime dependencies of the standard.
 
-The credential-authority refinement is additionally grounded in the clean
-Subactor credential-harvest connector revision
-`74df0673612f31712c13791b57030441f921b2bb`, the locally validated Inventory
+The credential-authority refinement is additionally grounded in the locally
+validated Subactor credential-harvest connector exact-reference gate revision
+`184139579424bbc5ecaa8067f71b6ed6b3490147`, the locally validated Inventory
 credential-reference handoff and tenant-scoped exact-lookup revision
 `ead9a678bd556da7ffb338bb168df0a0d90b4661`, and the locally validated Control
 ticket revision `d518444aae1634afc7f4b83e3e761509f7dbb069`.
-The observed Hub checkout was dirty and behind its remote-tracking branch, so
-it is not used as normative evidence.
+Clean Hub `origin/main` revision `c2d47d63c5a2c482acc4fe13a16837ed1d442f99`
+has grant-gated provider/origin harvest but no exact Inventory-reference HTTP
+endpoint. Ownership-only Hub PR 30 at
+`61f6b9422e45164d4561306816d452114465a4cd` removes a governance prerequisite;
+it is not treated as completed resolver evidence.
 
 Composition:
 
