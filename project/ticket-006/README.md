@@ -3,7 +3,7 @@
 - **ID**: ticket-006
 - **Owner**: unresolved:human
 - **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Workflow state**: PUBLICATION
 - **Created**: 2026-08-14
 
 ## Goal and scope
@@ -22,17 +22,28 @@ issuer/resolver remain fail-closed until policy supplies one.
 
 ## Acceptance criteria
 
-- [ ] AC-01: The user's request to continue autonomously and update extracted
+- [x] AC-01: The user's request to continue autonomously and update extracted
   conclusions records `SESSION_EXECUTION_AUTHORIZATION` for this bounded slice.
-- [ ] AC-02: Publication binds repository, change, exact head and a durable real
+- [x] AC-02: Publication binds repository, change, exact head and a durable real
   work identity issued before mutation or supplied by an authorized intake.
-- [ ] AC-03: Syntax-only identifiers, PR-number aliases, foreign tickets and
+- [x] AC-03: Syntax-only identifiers, PR-number aliases, foreign tickets and
   post-hoc fabricated references are explicitly insufficient.
-- [ ] AC-04: Validators resolve configured identity schemes and verify target
+- [x] AC-04: Validators resolve configured identity schemes and verify target
   ownership plus an admissible lifecycle state; an unsupported repository is
   blocked rather than bypassed.
-- [ ] AC-05: Agent v1 schema/grammar remain unchanged and conformance,
+- [x] AC-05: Agent v1 schema/grammar remain unchanged and conformance,
   governance and diff hygiene pass.
+
+## Validation evidence
+
+- `python3 standard/conformance.py --all`: 4 positive variants; 15 adversarial
+  cases rejected; schema and grammar digests unchanged.
+- `./project/governance-check.sh`: `GOV-PASS`, 0 errors and 0 warnings.
+- `git diff --check`: pass.
+- Platform artifact build wrote nothing and confirmed that this external
+  standard is not its managed artifact. Its independent check currently fails
+  on pre-existing `platform/AGENTS.md` declared-version drift (614/615 valid);
+  no Platform file was changed by this ticket.
 
 ## Evidence basis
 

@@ -30,6 +30,15 @@ and lifecycle state. Unsupported identity routing blocks publication.
 
 - Initialized the bounded ticket and recorded SESSION_EXECUTION_AUTHORIZATION
   from the request to execute this work.
+- Bound the guidance to exact Doctor PR #105 and Validator run `31814901052`.
+- Added the durable work-identity invariant, resolver trust boundary,
+  publication flow and fail-closed routing for repositories without an issuer.
+- Explicitly rejected syntax-only, PR-derived, foreign and post-hoc identities.
+- Kept `standard/agent.schema.json`, `standard/agent.v1.gbnf` and their pinned
+  conformance digests unchanged.
+- Passed agent conformance, deterministic governance and diff hygiene.
+- Confirmed the external Platform artifact registry wrote nothing; its separate
+  `AGENTS.md` declared-version drift remains outside this ticket.
 
 ## Blockers
 

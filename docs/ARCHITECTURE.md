@@ -54,6 +54,14 @@ coverage regression caused by an asymmetric ten-commit extraction window and
 removed it by binding the maximum supported bounded window of 100 commits.
 All of these revisions are evidence, not runtime dependencies of the standard.
 
+The publication-identity refinement is grounded in Doctor Agent head
+`4f1156dad200a94447c28ceeda4b7fc46084c88b` (merge
+`a64d5330ee3f9f0135e39797a1685a6e18cb117d`) and Validator run
+`31814901052`. The exact head passed Doctor's hosted checks, but validation
+stopped before examining it because Doctor has no issuer for Validator's
+universal `ticket-NNN`/`PLF-N` input. This proves an identity-routing gap; it
+does not authorize a fabricated ticket or make either repository a dependency.
+
 Composition:
 
 - `wellmanifest/dsl` constrains agent requests;
@@ -208,6 +216,14 @@ flowchart LR
     merely because it adopts a Wellmanifest pack or was requested "within
     Wellmanifest standardization". Ambiguous placement remains unresolved
     until an explicit decision; it MUST NOT be guessed by an LLM.
+26. Every mutating workstream and its publication MUST bind a durable work
+    identity issued before mutation or supplied by an authorized intake. Policy
+    MUST map each accepted identity scheme to a resolver; the independent
+    validator MUST verify that the record exists, targets the same repository
+    and change, and is in an admissible lifecycle state. A regex match, PR
+    number alias, foreign workstream ticket or post-hoc fabricated reference is
+    not identity evidence. A repository without a compatible issuer and
+    resolver remains `blocked`; this gap MUST NOT bypass independent validation.
 
 ## Trust boundaries
 
@@ -231,6 +247,7 @@ flowchart LR
 | Control-plane API transport | Exact-state freeze, hosted checks, independent dispatch and read-back | Retry storms, stale-head rebinding or weaker review identity |
 | Ticket/workstream reservation | One active local scope until integrated governance closure | Force-new bypass, hand-allocated IDs or inferred remote closure |
 | Placement resolver | HOME, SHAPE, runtime owner and adopted pack references | Treating ADOPT as repository ownership or inferring HOME from a standard name |
+| Work identity resolver | Accepted schemes, existing target-bound records and admissible lifecycle state | Syntax-only, foreign, PR-derived or post-hoc fabricated identities |
 
 ## Lane ownership
 
