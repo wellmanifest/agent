@@ -39,3 +39,9 @@ closed agent v1 document family.
 - None inside the recorded intent; proceed without a second confirmation.
 - New authority remains required for destructive action, secret access, new
   external coordination, material objective expansion and trusted merge.
+
+## Completion
+
+- Confirmed trusted Validator approval and explicit merge of PR #8.
+- Verified that the reviewed head and integrated merge have identical Git
+  trees, then closed ticket-005 from integrated `main`.

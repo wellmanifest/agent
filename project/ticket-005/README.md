@@ -2,8 +2,8 @@
 
 - **ID**: ticket-005
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: PUBLICATION
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-14
 
 ## Goal and scope
@@ -35,6 +35,15 @@ organization. Keep the closed agent v1 schema and grammar unchanged.
 - `git diff --check`: pass; `standard/**` has no diff from the accepted base.
 - The Subactor artifact registry has no managed entry for this external
   standalone standard, so no registry projection is changed by this ticket.
+
+## Publication evidence
+
+- Agent PR #8 was independently approved at exact head
+  `0b4aaa9618cd2318a1f3773668320e7526a6ce5e` after its hosted governance
+  check passed.
+- It merged as `18812f821c50de0e6deac6fce2362f9e931a88a7`; the reviewed
+  and integrated commits have identical Git trees.
+- This closure changes governance evidence only.
 
 ## Participants
 

@@ -8,3 +8,5 @@
   closed agent v1 schema and grammar as explicit non-goals.
 - Added the normative placement invariant and fail-closed lifecycle guidance;
   conformance and schema/grammar digests remain unchanged.
+- Recorded exact-head PR #8 publication, identical-tree integration and
+  governance-only closure from `main`.
