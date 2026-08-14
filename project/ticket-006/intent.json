@@ -1,0 +1,75 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-006",
+  "summary": "Bind autonomous publication to a real, resolved work identity",
+  "workstream": "integration",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P2",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-006/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "docs/ARCHITECTURE.md",
+    "docs/LOGIC_FLOW.md"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md",
+    "standard/**",
+    "VERSION",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "09ac6da84e13a327082d39f6eddea552c279aa95",
+    "targetBranch": "main",
+    "outcome": "Agent guidance requires a real, resolvable work identity for autonomous publication without changing the closed v1 contract",
+    "nonGoals": [
+      "Change the agent JSON Schema, grammar or document variants",
+      "Invent or allocate a Doctor Agent ticket after implementation",
+      "Change Validator Agent or Doctor Agent runtime code in this ticket",
+      "Access credentials or secret values"
+    ],
+    "complexity": "XS",
+    "estimatedMinutes": 15,
+    "budgets": {
+      "maxImplementationFiles": 2,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Keep agent v1 closed and add fail-closed work-identity guidance to architecture and lifecycle documentation",
+      "components": [
+        {
+          "name": "agent-guidance",
+          "paths": ["docs/ARCHITECTURE.md", "docs/LOGIC_FLOW.md"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Revert the two guidance additions while preserving ticket evidence and unchanged v1 schema and grammar"
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-05",
+        "commands": [
+          "python3 standard/conformance.py --all",
+          "./project/governance-check.sh",
+          "git diff --check"
+        ],
+        "evidence": "project/ticket-006/ai-codex-logs.txt"
+      }
+    ]
+  }
+}
