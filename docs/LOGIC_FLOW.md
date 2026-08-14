@@ -168,6 +168,33 @@ that same ticket through a governance-only change based on integrated main,
 then reruns the serialized allocator. `--force-new`, manual ticket directories
 and reservation overwrite are policy bypasses, not autonomy.
 
+### Publication work identity
+
+```mermaid
+flowchart LR
+    Intake[Authorized intake or allocator] --> Identity[Issue durable work identity]
+    Identity --> Resolve[Resolve through configured scheme]
+    Resolve --> Bind{Exists, target-bound and active?}
+    Bind -->|yes| Mutate[Mutate through pull request]
+    Mutate --> Freeze[Freeze exact head and hosted checks]
+    Freeze --> Validate[Independent validator resolves same identity]
+    Bind -->|no or unsupported| Block[Block without inventing an identifier]
+```
+
+The controller obtains the work identity before mutation and carries the same
+canonical reference through claim, pull request, exact-head validation, merge
+and integrated closure. Repository policy declares accepted schemes and the
+resolver for each scheme; a validator proves existence, target ownership and
+the required lifecycle state instead of accepting syntax alone. An authorized
+intake may supply an existing external identity, but a PR number is not
+silently promoted to one and another workstream's ticket is not reusable.
+
+When a repository has no compatible issuer/resolver pair, the controller
+records the routing gap and stops. It may add a governed identity provider or
+an explicitly configured resolver in a separate change; it may not invent a
+`ticket-NNN`/`PLF-N` value after implementation or use the gap to replace the
+independent validator with the PR author.
+
 ## Operational evidence
 
 Agent receipts contain immutable `evidenceRef` values rather than raw output.
@@ -270,6 +297,8 @@ leave HOME unresolved until an explicit approval supplies it.
 | Repairing without SHA | `failed` | stop before apply |
 | Receipt stores credentials | `failed` | redact and re-issue |
 | Runtime HOME inferred from an adopted Wellmanifest pack | `blocked` | keep HOME unresolved and obtain an explicit placement decision |
+| Validator accepts a syntax-only, foreign or post-hoc work identity | `blocked` | configure a resolver and bind an existing target-owned record before mutation |
+| Repository has no compatible work-identity issuer/resolver | `blocked` | add one through a separate governed change; do not fabricate a ticket or bypass validation |
 
 No failure path stores a lease secret or turns a transport-level success into
 a merged product change.

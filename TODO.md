@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] [ticket-006](project/ticket-006/README.md) — bind autonomous publication
+  to a real, target-resolved work identity instead of syntax-only ticket text.
 - [x] [ticket-005](project/ticket-005/README.md) — separate runtime HOME
   ownership from the Wellmanifest standards an agent adopts.
 - [x] [ticket-004](project/ticket-004/README.md) — refresh structural versus
