@@ -22,3 +22,8 @@
   inferring readiness from an internal resolver.
 - Passed conformance, governance, diff hygiene and Platform artifact validation
   without changing the user's dirty Platform checkout state.
+
+## [0.4.0] - 2026-08-14
+
+- Closed after independent Validator run `31788708818` merged pull request #4
+  at `51727fa68518aaf50237109d23a0440279c15e4d`.

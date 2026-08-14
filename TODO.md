@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] [ticket-003](project/ticket-003/README.md) — codify complete autonomous
+- [x] [ticket-003](project/ticket-003/README.md) — codify complete autonomous
   credential-reference capability and bounded evidence-window rules.
 - [x] [ticket-002](project/ticket-002/README.md) — distil verified Diagit and
   Doctor diagnostic-evidence rules into the compatible agent v1 standard.
