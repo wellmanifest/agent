@@ -1,0 +1,20 @@
+2026-08-14 ticket-003 validation
+
+python3 standard/conformance.py --all
+PASS: wellmanifest.agent-conformance/v1; 4 positive variants; 15 adversarial
+cases rejected; schema and grammar digests unchanged.
+
+./project/governance-check.sh --actor agent
+PASS: GOV-PASS (0 errors, 0 warnings).
+
+git diff --check
+PASS.
+
+npm run artifacts:build
+PASS: 614 artifacts, 614 valid, 0 invalid.
+
+npm run artifacts:check
+PASS: drift=[], invalid=[].
+
+Platform dirty-state fingerprint before and after artifact validation:
+ad324182b16c13c3ad5de0527734cf5ffc0b87d8540f22f9d311084b724341b4

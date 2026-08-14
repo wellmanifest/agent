@@ -63,22 +63,26 @@ target the control plane.
 
 ```mermaid
 sequenceDiagram
+    participant B as Protected bootstrap root
     participant I as Metadata inventory
     participant C as Domain controller
     participant A as Authority service
     participant H as Credential resolver or Hub
     participant V as Password manager or Vault
     participant X as Exact connector
+    B-->>C: service identity; never LLM context
+    B-->>H: bounded Inventory and Vault service identity
     C->>I: discover provider/account and stable credential ref
     I-->>C: metadata only; no credential value
     C->>C: verify ticket, actor, exact route and selected ref
     C->>A: issue short grant bound to subject, route, resource, ticket and ref
     A-->>C: opaque runtime grant
     C->>X: copied runtime payload with opaque grant
+    Note over X,H: exact-reference provider route must be registered
     X->>H: resolve exact granted ref
     H->>V: bounded lookup or fill
     V-->>X: short runtime use; no value in evidence
-    X-->>C: bounded result
+    X-->>C: bounded result and identical selection proof
     C->>A: revoke on success or failure
     A-->>C: revocation proof
     C-->>C: receipt only after proof and exact-state read-back
@@ -103,6 +107,33 @@ closed; a TTL limits damage but does not replace active revocation. Persistent
 receipts and operational events contain only non-replayable authority metadata
 and immutable redacted evidence.
 
+### Capability completeness and configuration bootstrap
+
+The runtime path is ready only when all of these compatible hops are present:
+
+1. Inventory accepts one validated, tenant-scoped reference and returns
+   metadata with `secret_value_present=false`.
+2. Hub binds that reference to exactly one supported account profile, store,
+   origin and username after the live grant check.
+3. A registered public provider route exposes the exact-reference operation.
+4. The connector uses only that route when a selector is present and requires
+   the identical selector in the response.
+5. The domain controller owns issue, dispatch, revocation on success and
+   failure, and independent Vault/read-back evidence.
+
+An implemented consumer plus an internal resolver does not prove step 3. If
+the route is absent, the state is `blocked`; the connector must not silently
+drop the selector or retry through a broad provider/origin harvest.
+
+Configuration has two separate secret classes. Workload credentials are found
+as Inventory metadata and resolved from the password manager or Vault only
+under the runtime grant. Bootstrap credentials are the minimum service
+identities needed to call Inventory, Hub and Vault; they come from a protected
+file, a system credential facility or an equivalent root of trust. Routing a
+bootstrap credential through the same not-yet-reachable Hub path is circular
+and fails closed. Endpoints, account ids and stable references may be ordinary
+configuration, but neither secret class is supplied to the LLM.
+
 ## Operational evidence
 
 Agent receipts contain immutable `evidenceRef` values rather than raw output.
@@ -112,6 +143,27 @@ event hashes, content-addressed redacted evidence, stable error codes and
 versioned runbooks. Readers fail closed on a duplicate event identity, broken
 order or hash, changed evidence, or an unknown/incomplete error definition.
 Legacy streams remain auditable and are never silently rewritten.
+
+## Historical evidence windows
+
+```mermaid
+flowchart LR
+    Base[Exact base revision] --> Extract[Versioned extractor]
+    Head[Exact head revision] --> Extract
+    Window[Declared bounded window] --> Extract
+    Extract --> Complete{Relevant evidence complete on both sides?}
+    Complete -->|yes| Compare[Semantic comparison]
+    Complete -->|no or unknown| Inconclusive[Inconclusive / fail closed]
+    Compare --> Receipt[Result binds revisions, window and truncation state]
+```
+
+A history-derived result is reproducible only when it records the extractor
+and tool revision, exact base/head and the same semantically sufficient bounded
+window for both sides. The extractor must expose truncation or uncertainty.
+When a default window evicts still-relevant claims from only one side, the
+system may repeat with a larger supported bound; it must not label the artifact
+as a source/intent regression. Unbounded history is not required and may create
+a different denial-of-service and relevance problem.
 
 ## Control plane versus product target
 
@@ -154,8 +206,12 @@ without secrets may run tests.
 | Request contains a token or merge command | `denied` | use grant and git-lifecycle |
 | Inventory or Hub returns a credential value or broad secret export | `denied` | retain metadata and resolve one exact granted reference at runtime |
 | Connector attempts to issue its own authority | `denied` | move grant issuance to the domain controller after exact-route validation |
+| Exact-reference consumer exists but its Hub/provider route is absent | `blocked` | publish the separately governed route and exercise an end-to-end canary; do not use legacy broad harvest |
+| Hub response does not echo the exact selected reference | `failed` | reject the result and retain only bounded mismatch evidence |
+| Bootstrap credential depends on the unresolved workload path | `blocked` | inject the minimum service identity from an independent protected root |
 | Runtime grant issuance or revocation lacks proof | `failed` | withhold success, retry bounded cleanup and rely on the short expiry as a safety bound |
 | Plan or receipt persists a bearer grant identifier | `failed` | keep the plan inert and retain only a non-replayable authority projection |
+| History comparison uses an asymmetric or truncated default window | `inconclusive` | repeat with a declared sufficient bound and bind tool, base, head, window and truncation state |
 | Active claim without `claimedUntil` | `failed` | expire and re-claim |
 | Repairing without SHA | `failed` | stop before apply |
 | Receipt stores credentials | `failed` | redact and re-issue |

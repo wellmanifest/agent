@@ -1,0 +1,73 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-003",
+  "summary": "Codify autonomous credential-reference and evidence-window rules",
+  "workstream": "integration",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-003/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "docs/ARCHITECTURE.md",
+    "docs/LOGIC_FLOW.md"
+  ],
+  "forbiddenPaths": ["project/ticket-*/user-*.md"],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "eafcfcbb7a4d849223e8976754d0d61aef633ea7",
+    "targetBranch": "main",
+    "outcome": "Agent v1 guidance binds complete credential-reference capability evidence, a non-circular secret bootstrap and symmetric bounded history evidence.",
+    "nonGoals": [
+      "Change the agent JSON Schema, grammar or document family",
+      "Publish the missing Hub HTTP endpoint",
+      "Read, export or persist a credential value",
+      "Turn Inventory metadata or an internal resolver into authority",
+      "Make Subactor repositories runtime dependencies",
+      "Weaken semantic thresholds or use an unbounded history scan"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 25,
+    "budgets": {
+      "maxImplementationFiles": 2,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Keep agent v1 closed and clarify that secret configuration requires a complete grant-bound capability chain plus an independent bootstrap root, while history-based decisions require symmetric bounded evidence.",
+      "components": [
+        {
+          "name": "agent-guidance",
+          "paths": ["docs/ARCHITECTURE.md", "docs/LOGIC_FLOW.md"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Revert the two guidance files while preserving ticket evidence and the unchanged v1 schema and grammar."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-05",
+        "commands": [
+          "python3 standard/conformance.py --all",
+          "./project/governance-check.sh --actor agent",
+          "git diff --check",
+          "npm run artifacts:build",
+          "npm run artifacts:check"
+        ],
+        "evidence": "project/ticket-003/ai-codex-logs.txt"
+      }
+    ]
+  }
+}
