@@ -45,7 +45,7 @@ MUTATION_FOR_KIND = {
     "runtime": "none",
     "vault": "none",
 }
-PRODUCT_OPERATIONS = {"claim", "diagnose", "repair", "validate", "orchestrate"}
+PRODUCT_ONLY_OPERATIONS = {"repair"}
 
 
 class ContractError(ValueError):
@@ -322,8 +322,8 @@ def validate_request(c: Contracts, value: Any) -> None:
     c.ref("sha256", value["planHash"])
     if value["targetKind"] not in {"product", "control-plane"}:
         raise ContractError("invalid target kind")
-    if value["operation"] in PRODUCT_OPERATIONS and value["targetKind"] != "product":
-        raise ContractError("mutating lane cannot target control plane")
+    if value["operation"] in PRODUCT_ONLY_OPERATIONS and value["targetKind"] != "product":
+        raise ContractError("repair cannot target control plane")
     if value["operation"] in {"repair", "validate"}:
         if "headSha" not in value or not re.fullmatch(r"[0-9a-f]{40}", str(value["headSha"])):
             raise ContractError("exact head SHA required")
@@ -434,6 +434,14 @@ def run_all() -> dict[str, Any]:
     validate_identity_separation(profiles)
     request, run, receipt = request_example(), run_example(), receipt_example()
     validate_request(c, request)
+    control_diagnosis = copy.deepcopy(request)
+    control_diagnosis["targetRef"] = "target://example.test/control/diagit"
+    control_diagnosis["targetKind"] = "control-plane"
+    validate_request(c, control_diagnosis)
+    control_validation = copy.deepcopy(control_diagnosis)
+    control_validation["operation"] = "validate"
+    control_validation["headSha"] = "b" * 40
+    validate_request(c, control_validation)
     validate_run(c, run)
     validate_receipt(c, receipt)
     cases = []
@@ -458,8 +466,11 @@ def run_all() -> dict[str, Any]:
     bad["operation"] = "repair"
     cases.append(("repair-without-head-sha", lambda: validate_request(c, bad)))
     bad = copy.deepcopy(request)
+    bad["operation"] = "repair"
+    bad["targetRef"] = "target://example.test/control/diagit"
     bad["targetKind"] = "control-plane"
-    cases.append(("diagnose-control-plane", lambda: validate_request(c, bad)))
+    bad["headSha"] = "b" * 40
+    cases.append(("repair-control-plane", lambda: validate_request(c, bad)))
     bad = copy.deepcopy(request)
     bad["token"] = "redacted-canary"
     cases.append(("inline-token", lambda: validate_request(c, bad)))

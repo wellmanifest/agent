@@ -1,0 +1,52 @@
+2026-08-14 ticket-002 validation evidence
+
+SOURCE OBSERVATION
+- Diagit origin/main: b6958c40598adcc44dd02e184bc7dc92325a90b9
+- Detached read-only worktree: workspace:subactor/.worktrees/diagit-standard-evidence
+- diagit/.venv/bin/python -m pytest -q
+  PASS: 109 passed
+- diagit/.venv/bin/ruff check src tests
+  PASS
+- diagit/.venv/bin/mypy src
+  PASS
+- Doctor origin/main: 1aed648d7c45588cf1e04d95ce315b64251c80bd
+- Hosted CI: https://github.com/subactor/doctor-agent/actions/runs/31775225109
+  PASS
+- Contribution policy: https://github.com/subactor/doctor-agent/actions/runs/31775225076
+  PASS
+
+AGENT STANDARD
+- python3 standard/conformance.py --all
+  PASS: schema and grammar digests unchanged; repair-control-plane rejected
+- docker compose run --build --rm conformance
+  PASS: rebuilt image; network_mode none; read_only true; repair-control-plane rejected
+- python3 -m py_compile standard/conformance.py
+  PASS
+- git diff --check
+  PASS
+- ./project/governance-check.sh --actor agent
+  PASS: 0 errors, 0 warnings
+
+SUBACTOR ARTIFACT REGISTRY
+- npm run artifacts:build
+  PASS: 614 artifacts, 614 valid, 0 invalid
+- npm run artifacts:check
+  PASS: drift [], invalid []
+- No managed registry entry was found for the external Diagit/Doctor source
+  paths or the standalone agent repository. The generated Platform registry
+  remains outside this ticket and is not included in its commit.
+
+SELF-REVIEW
+- Verified the implementation diff contains exactly three implementation files.
+- Verified standard/agent.schema.json and standard/agent.v1.gbnf are unchanged.
+- Corrected the recorded Diagit evidence SHA against origin/main before commit.
+
+WORKSPACE LIFECYCLE
+- Removed the owned clean detached Diagit evidence worktree after verifying its
+  HEAD was reachable from origin/main; pruned its Git metadata.
+- Dry-run verified and pruned four stale Git worktree metadata entries whose
+  /tmp paths no longer existed; no working files or branches were removed.
+- python3 .governance/workspace_lifecycle_check.py
+  --workspace-root workspace:wellmanifest
+  --allow workspace:wellmanifest/dsl-ticket-006-node24 --format json
+  PASS: 0 findings; preserved the unrelated active DSL worktree explicitly.
