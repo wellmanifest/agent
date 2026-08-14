@@ -123,7 +123,13 @@ The runtime path is ready only when all of these compatible hops are present:
 
 An implemented consumer plus an internal resolver does not prove step 3. If
 the route is absent, the state is `blocked`; the connector must not silently
-drop the selector or retry through a broad provider/origin harvest.
+drop the selector or retry through a broad provider/origin harvest. When every
+hop is registered and contract-tested, the chain is structurally complete but
+still not operationally ready. Readiness requires one live canary that uses a
+controller-issued short grant, the exact connector/provider route and bounded
+password-manager/Vault resolution, then proves revocation and independent
+read-back in a secret-free receipt. A route test or orchestration double cannot
+stand in for that canary.
 
 Configuration has two separate secret classes. Workload credentials are found
 as Inventory metadata and resolved from the password manager or Vault only
@@ -133,6 +139,34 @@ file, a system credential facility or an equivalent root of trust. Routing a
 bootstrap credential through the same not-yet-reachable Hub path is circular
 and fails closed. Endpoints, account ids and stable references may be ordinary
 configuration, but neither secret class is supplied to the LLM.
+
+## Fail-closed control-plane recovery
+
+```mermaid
+flowchart LR
+    Observe[Observe transport failure or stale reservation] --> Classify{Failure class}
+    Classify -->|API transport| Freeze[Freeze exact remote state through equivalent authenticated API]
+    Freeze --> Checks[Verify required checks and re-read unchanged head]
+    Checks --> Validate[Invoke same independent validator identity]
+    Validate --> ReadBack[Read back exact review and merge]
+    Classify -->|Merged ticket still active| Bind[Bind reviewed head and protected merge]
+    Bind --> Close[Governance-only closure from integrated main]
+    Close --> Allocate[Rerun serialized allocator]
+```
+
+A depleted GraphQL quota, unavailable CLI projection or comparable transport
+failure is not permission to retry without a bound or bypass a check. The
+controller may use an equivalent authenticated REST or other supported API
+only if repository, pull request, exact head, hosted checks, validator identity
+and final read-back stay identical. It records the degraded transport and stops
+if the head moves or any required evidence is unavailable.
+
+Remote merge does not silently release local ticket governance. If an
+`IN_PROGRESS` ticket still reserves the needed workstream, a new allocator run
+must fail. Recovery verifies its exact-head review and protected merge, closes
+that same ticket through a governance-only change based on integrated main,
+then reruns the serialized allocator. `--force-new`, manual ticket directories
+and reservation overwrite are policy bypasses, not autonomy.
 
 ## Operational evidence
 

@@ -37,12 +37,18 @@ and merged Subactor revisions: Inventory `082e8fc954a0554458c4f08456e8e18009579d
 metadata selection, an internal password-manager resolver, connector-side
 selection proof and controller-owned issue/revoke behavior respectively.
 
-They do not yet prove one callable end-to-end capability. The connector sends
-an exact selector only to `/v1/commands/harvest-reference`, while the accepted
-Hub change explicitly excludes any new HTTP or MCP endpoint. An internal
-resolver is not route-registration evidence, and the legacy broad harvest must
-not be used as a fallback. The evidence-window rule is separately grounded in
-Core `bf041fc6a9d72cde6e7757d14dac8d5685639676` (merge
+Hub route head `62fdd105a9263b2c6bdc8e86db95145edb70365c` (merge
+`3bc723fe9ca7b3a774c0f67a22595c06e8f4ec7c`) now exposes the authenticated
+exact-reference operation consumed by the connector. Regression head
+`f59cc503312c8e58a651fbd6bc944afd005e6920` (merge
+`feb2548401a49757018baa2c6607ba0b8ce90f1e`) permanently proves bearer and
+request validation, byte-exact delegation, secret-free response and legacy
+compatibility. The compatible hops are therefore structurally present, but
+these revisions do not prove a live controller-issued grant, real
+password-manager/Vault resolution, revocation and independent read-back canary.
+That operational state remains unproven and MUST NOT be inferred from route or
+ASGI tests. The evidence-window rule is separately grounded in Core
+`bf041fc6a9d72cde6e7757d14dac8d5685639676` (merge
 `16b259d4ca42c1b10888296e56c16fc3619fa943`), which reproduced a false
 coverage regression caused by an asymmetric ten-commit extraction window and
 removed it by binding the maximum supported bounded window of 100 commits.
@@ -142,13 +148,18 @@ flowchart LR
     substitute for revocation. Durable receipts and operational events MAY
     retain a non-replayable authority projection and immutable evidence, but
     MUST NOT retain bearer identifiers or credential values.
-20. An exact credential-reference capability is complete only when compatible,
-    registered hops exist for the exact metadata query, resolver, public runtime
-    route, connector selection proof, controller-owned issue/revoke lifecycle
-    and Vault write/read-back. An internal function, unit test or route consumer
-    MUST NOT be reported as proof that a missing provider route exists. A missing
-    or revision-incompatible hop is `blocked`, and MUST NOT fall back to a
-    broader lookup or legacy harvest.
+20. An exact credential-reference capability is structurally complete only
+    when compatible, registered hops exist for the exact metadata query,
+    resolver, public runtime route, connector selection proof,
+    controller-owned issue/revoke lifecycle and Vault write/read-back. An
+    internal function, unit test or route consumer MUST NOT be reported as
+    proof that a missing provider route exists. Operational readiness
+    additionally requires a live canary that exercises a controller-issued
+    grant, exact connector/provider route, bounded password-manager/Vault use,
+    revocation proof and independent read-back while persisting only a
+    secret-free receipt. A missing or revision-incompatible hop is `blocked`,
+    and MUST NOT fall back to a broader lookup or legacy harvest; a structurally
+    complete chain without that canary remains `unproven`, not ready.
 21. Secret-bearing configuration MUST be resolved outside the LLM context from
     an exact password-manager/Vault reference under live authority. Inventory
     supplies metadata and stable selectors only. The service credentials needed
@@ -162,6 +173,19 @@ flowchart LR
     window. If required claims may have been evicted, the result is
     `inconclusive` or fail-closed, not a semantic regression. A larger declared
     bounded window MAY be used; an implicit default or unbounded scan MUST NOT.
+23. Exhaustion or failure of one control-plane API transport MUST NOT trigger
+    an unbounded retry loop or weaken publication policy. An equivalent
+    authenticated transport MAY be substituted only when it freezes the same
+    repository, pull request and exact head, observes the required hosted
+    checks, re-reads the unchanged head at dispatch, invokes the same
+    independent validator identity and reads back the exact review and merge.
+    The degraded transport and its evidence MUST be recorded.
+24. A locally active ticket or workstream reservation remains authoritative
+    even after its implementation was remotely merged. An allocator MUST fail
+    closed. Recovery MUST bind the reviewed head and protected merge, create a
+    governance-only closure from integrated default-branch state and rerun the
+    allocator. It MUST NOT use force-new, hand-create a ticket ID or overwrite
+    the stale reservation.
 
 ## Trust boundaries
 
@@ -182,6 +206,8 @@ flowchart LR
 | Capability/route registry | Compatible provider and consumer route revisions plus canary evidence | Inferring a public route from an internal function or consumer-only test |
 | Bootstrap credential boundary | Minimum service identity needed to reach Inventory, Hub and Vault | Circular lookup through the unresolved workload credential path |
 | Historical evidence extractor | Tool revision, exact base/head, symmetric bounded window and truncation state | Comparing asymmetric or silently truncated claim sets |
+| Control-plane API transport | Exact-state freeze, hosted checks, independent dispatch and read-back | Retry storms, stale-head rebinding or weaker review identity |
+| Ticket/workstream reservation | One active local scope until integrated governance closure | Force-new bypass, hand-allocated IDs or inferred remote closure |
 
 ## Lane ownership
 
