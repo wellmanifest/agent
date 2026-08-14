@@ -3,7 +3,7 @@
 - **ID**: ticket-005
 - **Owner**: unresolved:human
 - **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Workflow state**: PUBLICATION
 - **Created**: 2026-08-14
 
 ## Goal and scope
@@ -17,15 +17,24 @@ organization. Keep the closed agent v1 schema and grammar unchanged.
 
 - [x] AC-01: The user's request to continue autonomously and update extracted
   conclusions records `SESSION_EXECUTION_AUTHORIZATION` for this bounded slice.
-- [ ] AC-02: Guidance separates the owner/operator of an agent runtime from the
+- [x] AC-02: Guidance separates the owner/operator of an agent runtime from the
   Wellmanifest packs that the runtime adopts.
-- [ ] AC-03: "within Wellmanifest standardization" is treated as ADOPT, not as
+- [x] AC-03: "within Wellmanifest standardization" is treated as ADOPT, not as
   an inferred HOME placement.
-- [ ] AC-04: Runtime agent services remain HOME in a runtime organization such
+- [x] AC-04: Runtime agent services remain HOME in a runtime organization such
   as `subactor` or `semcod`; `wellmanifest` remains valid HOME for a domain
   pack rather than a product daemon.
-- [ ] AC-05: The agent v1 JSON Schema, request grammar and their digests remain
+- [x] AC-05: The agent v1 JSON Schema, request grammar and their digests remain
   unchanged; conformance, governance and diff hygiene pass.
+
+## Validation evidence
+
+- `python3 standard/conformance.py --all`: 4 positive variants and 15
+  adversarial cases; pinned schema and grammar digests unchanged.
+- `./project/governance-check.sh`: `GOV-PASS`, 0 errors and 0 warnings.
+- `git diff --check`: pass; `standard/**` has no diff from the accepted base.
+- The Subactor artifact registry has no managed entry for this external
+  standalone standard, so no registry projection is changed by this ticket.
 
 ## Participants
 
