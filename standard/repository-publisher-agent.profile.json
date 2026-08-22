@@ -1,0 +1,54 @@
+{
+  "$schema": "https://wellmanifest.dev/schemas/repository-publisher-agent/v1",
+  "schema": "wellmanifest.repository-publisher-agent/v1",
+  "profileId": "profile.repository.publisher.v1",
+  "version": "1.0.0",
+  "agentRef": "agent://subactor/repository-publisher-agent/v1",
+  "kind": "repository-publisher",
+  "lane": "publish-initial-ref",
+  "mutation": "initial-ref-publish",
+  "identityRef": "identity://subactor/repository-publisher-agent",
+  "operationProfile": {
+    "repository": "wellmanifest/skills",
+    "revision": "54d71ad2ec04896a1591d14d22de54562bafd4a1",
+    "path": "standard/repository-initial-ref.operation-profile.json",
+    "sha256": "5c11ad50de8e5724dc056797573e1bee4176d9f531c3f38f79f04562c3127225"
+  },
+  "mutationContract": {
+    "repository": "wellmanifest/git-lifecycle",
+    "revision": "72ade3b6c7ad68f617a50871a1f7466e7a868ab9",
+    "path": "standard/repository-initial-ref.schema.json",
+    "sha256": "6fdba8c71765cb217219bd3f459258170f7f1eaf70bb60970c4d3ecc68f0d724"
+  },
+  "remotePrecondition": "empty-no-refs",
+  "authority": {
+    "mode": "digest-bound",
+    "requiredBindings": [
+      "planDigest",
+      "repositoryRef",
+      "targetBranchRef",
+      "sourceCommitSha",
+      "sourceTreeDigest",
+      "allowlistDigest"
+    ],
+    "singleUse": true,
+    "inheritedAuthority": false,
+    "whenMissing": "block"
+  },
+  "executionSafety": {
+    "isolation": "isolated-workspace",
+    "executesUntrustedCode": false,
+    "storesCredentials": false,
+    "forceAllowed": false
+  },
+  "completion": {
+    "publicationState": "initial-ref-published",
+    "publicationTerminal": false,
+    "validatorRole": "validator-agent",
+    "independentValidation": true,
+    "terminalStates": ["accepted", "quarantined"],
+    "automaticRefDeletion": false
+  },
+  "maxClaimSeconds": 900,
+  "llmAuthority": "advisory"
+}

@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] [ticket-007](project/ticket-007/README.md) — define a separately granted
+  one-time repository publisher without widening Repair or agent/v1.
 - [x] [ticket-006](project/ticket-006/README.md) — bind autonomous publication
   to a real, target-resolved work identity instead of syntax-only ticket text.
   State: `DONE / DONE`; PR #10 merged as `6e50d12` after exact-head Validator

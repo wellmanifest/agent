@@ -1,0 +1,8 @@
+2026-08-22T21:30:00Z ticket-007 validation
+PASS: publisher JSON Schema and canonical profile
+PASS: 1 repository publisher profile, 14 adversarial cases
+PASS: agent/v1, 4 positive variants and 15 adversarial cases
+PASS: agent.schema.json raw digest 0668229f8a674355ffb3fe8f43e6943152bd2ff9a889be7362c5b25f7bad6f8b
+PASS: agent.v1.gbnf raw digest 72ca71087b5da77c006e3ad41588409af8bbe156711d6c6350e75549bd537286
+GOV-PASS: passed (0 errors, 0 warnings)
+PASS: git diff --check

@@ -70,6 +70,35 @@ Composition:
 - `account-runtime` may later bind identity;
 - `saas-lifecycle` may later bind an `agentRef` as an operational element.
 
+### One-time repository publisher companion
+
+The closed `agent/v1` vocabulary remains unchanged: Repair is still the only
+generic agent that mutates product code, and it still does so only through a
+pull request. A repository with no refs cannot use that lane. The additive
+`wellmanifest.repository-publisher-agent/v1` profile instead describes a
+domain controller for exactly one `repository:initial-ref` operation.
+
+The canonical profile binds `agent://subactor/repository-publisher-agent/v1`
+to the immutable Skills operation profile at
+`54d71ad2ec04896a1591d14d22de54562bafd4a1` and the immutable Git lifecycle
+contract at `72ade3b6c7ad68f617a50871a1f7466e7a868ab9`. These coordinates are
+data-contract dependencies, not remote runtime fetches. An adopter resolves
+and verifies local pinned copies before execution.
+
+The publisher accepts only a remote with zero refs and an isolated exact source
+commit. It consumes a fresh digest-bound, single-use grant that cannot be
+inherited from repository creation or bootstrap. It cannot force, execute the
+source code, store credentials, self-validate or delete a quarantined ref.
+Publication produces a non-terminal receipt. Only an independent
+`validator-agent` read-back can emit the terminal `accepted` or `quarantined`
+state.
+
+The runtime service is HOME `subactor` and ADOPTS the Wellmanifest Agent,
+Skills and Git lifecycle packs. Wellmanifest owns this portable role contract,
+not the daemon, queue consumer, Git transport or credentials. Until an adopter
+implements the profile and registers its exact route, Skills may propose the
+operation but the runtime must remain blocked.
+
 ### HOME versus ADOPT placement
 
 Placement and conformance are separate declarations. `HOME` names the
@@ -224,6 +253,11 @@ flowchart LR
     number alias, foreign workstream ticket or post-hoc fabricated reference is
     not identity evidence. A repository without a compatible issuer and
     resolver remains `blocked`; this gap MUST NOT bypass independent validation.
+27. The repository-publisher companion MUST NOT be treated as an `agent/v1`
+    Repair profile. It MAY publish only the first ref under its pinned domain
+    contract, a fresh non-inherited single-use grant and independent terminal
+    validation. Any nonempty remote, force request, contract substitution or
+    automatic ref deletion MUST fail closed.
 
 ## Trust boundaries
 
