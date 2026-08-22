@@ -1,0 +1,84 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-007",
+  "summary": "Define one-time repository publisher agent",
+  "workstream": "integration",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-007/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "VERSION",
+    "docs/ARCHITECTURE.md",
+    "standard/repository-publisher-agent.schema.json",
+    "standard/repository-publisher-agent.profile.json",
+    "standard/repository_publisher_conformance.py"
+  ],
+  "forbiddenPaths": ["project/ticket-*/user-*.md"],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "3b95da974ba8a10fa4527fb37236117352acd439",
+    "targetBranch": "main",
+    "outcome": "A runtime-owned repository publisher can fill the Skills domain-executor slot without granting Repair direct default-branch mutation.",
+    "nonGoals": [
+      "Modify agent/v1 or widen Repair mutation",
+      "Implement Git transport, queue polling or grant issuance",
+      "Store credentials, commands, URLs or bearer authority",
+      "Create the Subactor runtime repository",
+      "Delete a quarantined ref"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 30,
+    "budgets": {
+      "maxImplementationFiles": 5,
+      "maxAffectedComponents": 2,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Add a companion domain-controller profile pinned to the existing Skills and git-lifecycle contracts; leave agent/v1 immutable.",
+      "components": [
+        {
+          "name": "repository-publisher-profile",
+          "paths": [
+            "standard/repository-publisher-agent.schema.json",
+            "standard/repository-publisher-agent.profile.json",
+            "standard/repository_publisher_conformance.py"
+          ]
+        },
+        {
+          "name": "agent-composition-guidance",
+          "paths": ["docs/ARCHITECTURE.md", "VERSION"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [
+        "Add wellmanifest.repository-publisher-agent/v1 as a companion contract"
+      ],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Remove the additive companion profile; agent/v1 and its adopters remain unchanged."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-05",
+        "commands": [
+          "python3 standard/conformance.py --all",
+          "python3 standard/repository_publisher_conformance.py --all",
+          "./project/governance-check.sh --actor agent",
+          "git diff --check"
+        ],
+        "evidence": "project/ticket-007/ai-codex-logs.txt"
+      }
+    ]
+  }
+}
