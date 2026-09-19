@@ -1,0 +1,44 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-009",
+  "summary": "MCP client authority boundaries for Taskand agents",
+  "workstream": "integration",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P2",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-009/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "docs/INFORMATION/MCP_CLIENT_BOUNDARIES.md",
+    "docs/README.md"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": ["ticket-010"],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "1f00f61e32a82249b1b67045eb837eff5c71992c",
+    "targetBranch": "main",
+    "outcome": "Local indexed guidance for Taskand MCP client authority boundaries after successful Docs admission. Publish through independent protected Validator review and merge.",
+    "nonGoals": ["No runtime implementation", "No schema changes", "No governance adoption in this scope"],
+    "complexity": "S",
+    "estimatedMinutes": 30,
+    "budgets": {"maxImplementationFiles": 2, "maxAffectedComponents": 1, "maxPublicInterfaceChanges": 0, "maxRuntimeDependencies": 0},
+    "architecture": {
+      "status": "accepted",
+      "decision": "Indexed informational guidance preserves the normative agent/v1 contract and runtime HOME ownership.",
+      "components": [{"name": "documentation", "paths": ["docs/**"]}],
+      "responsibilityChanges": false, "interfaceChanges": [], "dataChanges": [],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Revert only the future material documentation commit."
+    },
+    "runtimeDependencies": [],
+    "validation": [{"criterion": "AC-02", "commands": ["./project/governance-check.sh"], "evidence": "Docs prepare and completion plus local governance; not trusted merge approval."}]
+  }
+}
