@@ -3,12 +3,12 @@
   "schema": "wellmanifest.docs/document/v2",
   "id": "report-placement-wellman",
   "kind": "analysis",
-  "version": 1,
+  "version": 2,
   "title": "Raport agenta w repozytorium i bezpieczna adopcja Wellmana",
   "status": "proposed",
   "owner": "wellmanifest/agent",
   "scope": "repository",
-  "updated": "2026-09-19",
+  "updated": "2026-10-03",
   "source_revision": "942d6289f729e997815bf35bad378d653ea78b9a",
   "priority": "P1",
   "evidence": [
@@ -47,11 +47,10 @@ Ta analiza dotyczy zachowania agenta; nie jest audytem zgodności całej floty.
 | Zainstalowany CLI | Instalacja użytkownika może być poza repo; nie jest raportem ani dowodem adopcji |
 
 Nie należy utożsamiać `Path.resolve()` z identyfikacją repozytorium.
-Najpierw ustala się aktywny Git root, osobno główny checkout dla lease/recovery,
-następnie sprawdza ścieżkę docelową i dowiązania. Jawny zewnętrzny katalog
-nie może zostać milcząco uznany za repozytorium. Bootstrap wymaga osobnego trybu.
+Ustal Git root, główny checkout lease/recovery oraz bezpieczną ścieżkę docelową.
+Zewnętrzny katalog nie jest domyślnie repozytorium; bootstrap wymaga jawnego trybu.
 
-## Dlaczego samo Wellman nie wystarczyło
+## Stan Wellmana obserwowany 2026-09-19
 
 Zainstalowany Wellman 0.20.36 ma katalog standardów, ale wybranie Docs zwraca
 `GOV-STANDARD-NOT-IMPLEMENTED`. Dotychczasowy `adopt` tworzy podstawowy manifest;
@@ -75,12 +74,10 @@ przeszedł zarządzane `feature-probe` i `validate --check-filesystem` v5.
 Lokalne Docs prepare zaakceptowało oba dokumenty przed zapisem.
 Oba odbiory Docs przeszły; 7 regresji adaptera, 4 pozytywne/15 negatywnych
 przypadków agenta i 1 pozytywny/14 negatywnych publishera również przeszły.
-Governance sprawdza dodatkowo brak maszynowych ścieżek absolutnych w intencie;
-lokalizację zaufanego Docs dostarcza środowisko wykonania, nie zapisany katalog
-użytkownika. Lokalny PASS nie zaświadcza produkcyjnego wdrożenia Wellmana.
+Docs wybiera środowisko wykonania; lokalny PASS nie zaświadcza wdrożenia Wellmana.
 
 <!-- docs:section risks -->
-## Kolejność naprawy i stan
+## Stan przekazania z 2026-09-19
 
 Poprawiono wskazówki agenta i umieszczono tę analizę w indeksowanym repozytorium.
 Runtime pozostaje bez zmian. Użytkownik zatwierdził przekazanie Wellman
@@ -92,3 +89,7 @@ Po dopuszczeniu ticketu: resolver i testy root/subdirectory/worktree/symlink,
 integracja przypiętego Docs, jeden kontrolowany adopter, dopiero potem kolejne
 repozytoria z testem zachowania pinów i idempotencji. Zachować stare bramy
 oraz prywatne kopie; nie zgłaszać masowej adopcji na podstawie scaffoldingu.
+
+## Aktualizacja 2026-10-03
+
+Użytkownik zlecił publikację istniejącego ticket-011. Powyższe reprodukcje dotyczą 2026-09-19. [Issue Wellmana #2](https://github.com/wellmanifest/wellman/issues/2) zamknięto 2026-09-28; nie dowodzi to wdrożenia floty. Zakres obejmuje analizę i wskazówki, z ponownym Docs/conformance/governance oraz niezależnym zatwierdzeniem HEAD. Nie zmienia runtime ani admission.

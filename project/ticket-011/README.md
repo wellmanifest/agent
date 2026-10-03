@@ -3,7 +3,7 @@
 - **ID**: ticket-011
 - **Owner**: codex:repo-local-report-delivery
 - **Status**: IN_PROGRESS
-- **Workflow state**: VALIDATION
+- **Workflow state**: PUBLICATION
 - **Created**: 2026-09-19
 
 ## Goal and scope
@@ -36,3 +36,7 @@ authority to invent the missing local ticket-002 identity or waive its gate.
 
 This directory contains the minimal reviewed intent. Optional participant prose
 and raw command logs are not required delivery output.
+
+## Publication continuation 2026-10-03
+
+SESSION_EXECUTION_AUTHORIZATION: the user explicitly requested pushing and merging the remaining unpublished projects. This extends the earlier local-only delivery to protected publication of this existing bounded ticket. The earlier lease is cancelled; a new plan-bound fenced lease owns this continuation. Runtime changes and rollout claims remain excluded.
