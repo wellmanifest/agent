@@ -3,15 +3,16 @@
   "schema": "wellmanifest.docs/document/v2",
   "id": "mcp-client-boundaries",
   "kind": "information",
-  "version": 1,
+  "version": 2,
   "title": "Granice delegowania przez MCP w agentach Taskand",
   "status": "proposed",
   "owner": "wellmanifest/agent",
   "scope": "repository",
   "updated": "2026-09-19",
-  "source_revision": "118ab6cffd56b98b18e57460799fc5e77c06d4e2",
+  "source_revision": "942d6289f729e997815bf35bad378d653ea78b9a",
   "priority": "P2",
   "evidence": [
+    "repo://wellmanifest/docs@19efafbeb18923cfd51cc69bd519330488500137/docs/standard/POLICY.md",
     "repo://wellmanifest/agent@118ab6cffd56b98b18e57460799fc5e77c06d4e2/docs/ARCHITECTURE.md",
     "repo://semcod/koru@f837788088540da1dc72736a44bb8c2011d8364d/src/koruapi/mcp_server_planfile.py",
     "https://modelcontextprotocol.io/specification/2025-11-25/server/tools"
@@ -58,9 +59,18 @@ nie zaświadcza wdrożenia kontrolera.
    Po utracie odpowiedzi uzgodnić stan joba przed ponowieniem.
 9. Zapisywać request/job, serwer/release, narzędzie, wynik walidacji i bezpieczne
    referencje dowodowe. Nie logować tokenów ani pełnych wrażliwych payloadów.
+10. Wynik końcowy umieszczać w wersjonowanym `docs/` właściciela i indeksie;
+    receipt w `~/.local/state` nie zastępuje raportu. Przed zapisem wykonać
+    przypięte Docs `--prepare`, przed przekazaniem `--complete`.
+    Root dokumentu ustala Git dla aktywnego worktree, nie dowolne cwd.
+    Ignorowane dowody lokalne trafiają do `.subactor/receipts/`; przed usunięciem
+    worktree zachować je w magazynie recovery głównego checkoutu.
+    Nie przenosić chronionych poświadczeń ani kontrolera do checkoutu PR.
+    [Analiza ścieżek i ograniczeń Wellmana](../ANALYSIS/REPORT_PLACEMENT_WELLMAN.md)
+    podaje testy wymagane przed adopcją.
 
-Dobór konkretnych backendów należy do przewodnika `TASKAND_MCP_REUSE.md`
-w wellmanifest/taskand (ticket-005, lokalny kandydat). Architektura ról pozostaje
+Dobór backendów opisuje [scalony przewodnik Taskand](https://github.com/wellmanifest/taskand/blob/a225d1046f8c9dc4109935abf710e9ecc45c12cd/docs/INFORMATION/TASKAND_MCP_REUSE.md).
+Architektura ról pozostaje
 w [ARCHITECTURE.md](../ARCHITECTURE.md); nie kopiować jej do promptów jako zgody.
 
 <!-- docs:section validation -->

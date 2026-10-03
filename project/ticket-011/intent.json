@@ -1,0 +1,78 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-011",
+  "summary": "Keep agent delivery reports inside their owning repository",
+  "workstream": "integration",
+  "classification": {
+    "kind": "BUG",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-011/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "docs/ANALYSIS/REPORT_PLACEMENT_WELLMAN.md",
+    "docs/INFORMATION/MCP_CLIENT_BOUNDARIES.md",
+    "docs/README.md"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "942d6289f729e997815bf35bad378d653ea78b9a",
+    "targetBranch": "main",
+    "outcome": "Publish and independently merge the repository-local incident report and corrected report-placement guidance, retaining historical observations and explicit deployment limits.",
+    "nonGoals": [
+      "No Wellman source or installed-runtime changes",
+      "No workspace-wide mutation or protected policy changes",
+      "No credential/recovery-store relocation"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 30,
+    "budgets": {
+      "maxImplementationFiles": 3,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Apply existing Docs placement and worktree rules at the agent handoff boundary, preserving runtime ownership and protected external state.",
+      "components": [
+        {
+          "name": "agent documentation",
+          "paths": [
+            "docs/**"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Revert only the material documentation commit."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-03",
+        "commands": [
+          "./project/governance-check.sh",
+          "python3 standard/conformance.py --all",
+          "python3 standard/repository_publisher_conformance.py --all",
+          "python3 -m unittest discover -s .governance/tests -p test_docs_adoption.py"
+        ],
+        "evidence": "DOCS_SOURCE resolves the trusted local Docs installation at execution time. Pinned Docs prepare/completion, governance and unchanged contract conformance; not deployment evidence."
+      }
+    ]
+  }
+}
