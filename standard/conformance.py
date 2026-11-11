@@ -5,222 +5,51 @@ from __future__ import annotations
 
 import argparse
 import copy
-import hashlib
+import importlib
 import json
-import re
-from datetime import datetime
+import sys
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parent
-SCHEMA_PATH = ROOT / "agent.schema.json"
-GRAMMAR_PATH = ROOT / "agent.v1.gbnf"
-SCHEMA_DIGEST = "97406321f9b7b2388b78ebdbbf307ea6cf2628cf1e8684252f9c3f5b142800b6"
-GRAMMAR_DIGEST = "72ca71087b5da77c006e3ad41588409af8bbe156711d6c6350e75549bd537286"
-SCHEMA_URI = "https://wellmanifest.dev/schemas/agent/v1"
-SENSITIVE = re.compile(
-    r"(?:password|passwd|token|secret|cookie|api[-_]?key|card|cvv|private[-_]?key|"
-    r"argv|shell|remote[-_]?url|force[-_]?push|auto[-_]?merge|merge[-_]?command)",
-    re.I,
-)
-SAFE_ASSERTIONS = {"secretsRedacted", "credentialsStored", "storesCredentials", "executesUntrustedCode"}
-LANE_FOR_KIND = {
-    "doctor": "diagnose",
-    "repair": "repair",
-    "validator": "validate",
-    "test": "observe",
-    "skills": "orchestrate",
-    "control": "orchestrate",
-    "runtime": "execute",
-    "vault": "lease",
-}
-MUTATION_FOR_KIND = {
-    "doctor": "none",
-    "repair": "pull-request",
-    "validator": "none",
-    "test": "none",
-    "skills": "none",
-    "control": "none",
-    "runtime": "none",
-    "vault": "none",
-}
-PRODUCT_ONLY_OPERATIONS = {"repair"}
+def _load_contracts_module() -> Any:
+    std_dir = str(Path(__file__).resolve().parent)
+    if std_dir not in sys.path:
+        sys.path.insert(0, std_dir)
+    return importlib.import_module("agent_contracts")
 
 
-class ContractError(ValueError):
-    """A bounded error that never repeats untrusted secrets or commands."""
+_AC = _load_contracts_module()
+
+ROOT: Path = _AC.ROOT
+SCHEMA_PATH: Path = _AC.SCHEMA_PATH
+GRAMMAR_PATH: Path = _AC.GRAMMAR_PATH
+SCHEMA_DIGEST: str = _AC.SCHEMA_DIGEST
+GRAMMAR_DIGEST: str = _AC.GRAMMAR_DIGEST
+SCHEMA_URI: str = _AC.SCHEMA_URI
+SENSITIVE = _AC.SENSITIVE
+SAFE_ASSERTIONS: set[str] = _AC.SAFE_ASSERTIONS
+LANE_FOR_KIND: dict[str, str] = _AC.LANE_FOR_KIND
+MUTATION_FOR_KIND: dict[str, str] = _AC.MUTATION_FOR_KIND
+PRODUCT_ONLY_OPERATIONS: set[str] = _AC.PRODUCT_ONLY_OPERATIONS
+RECEIPT_OUTCOMES: set[str] = _AC.RECEIPT_OUTCOMES
+ContractError = _AC.ContractError
+Contracts = _AC.Contracts
+canonical = _AC.canonical
+digest = _AC.digest
+exact = _AC.exact
+is_int = _AC.is_int
+profile_example = _AC.profile_example
+receipt_example = _AC.receipt_example
+reject_sensitive = _AC.reject_sensitive
+request_example = _AC.request_example
+run_example = _AC.run_example
+strict_json_loads = _AC.strict_json_loads
+time_value = _AC.time_value
 
 
-def canonical(value: Any) -> str:
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-
-
-def digest(value: str) -> str:
-    return hashlib.sha256(value.encode()).hexdigest()
-
-
-def exact(value: Any, required: set[str], optional: set[str] | None = None) -> dict[str, Any]:
-    if not isinstance(value, dict):
-        raise ContractError("expected object")
-    optional = optional or set()
-    if set(value) - required - optional:
-        raise ContractError("undeclared field")
-    if required - set(value):
-        raise ContractError("missing field")
-    return value
-
-
-def time_value(value: Any) -> datetime:
-    if not isinstance(value, str) or len(value) > 40:
-        raise ContractError("invalid date-time")
-    try:
-        result = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    except ValueError as error:
-        raise ContractError("invalid date-time") from error
-    if result.tzinfo is None:
-        raise ContractError("timezone required")
-    return result
-
-
-def reject_sensitive(value: Any) -> None:
-    if isinstance(value, dict):
-        for key, child in value.items():
-            if SENSITIVE.search(key) and key not in SAFE_ASSERTIONS:
-                raise ContractError("sensitive data channel")
-            reject_sensitive(child)
-    elif isinstance(value, list):
-        for child in value:
-            reject_sensitive(child)
-
-
-class Contracts:
-    def __init__(self) -> None:
-        self.schema = json.loads(SCHEMA_PATH.read_text("utf-8"))
-        self.grammar = GRAMMAR_PATH.read_text("utf-8")
-        defs = self.schema.get("$defs", {})
-        names = (
-            "identifier",
-            "sha256",
-            "agentRef",
-            "runRef",
-            "correlationRef",
-            "targetRef",
-            "skillRef",
-            "identityRef",
-            "leaseRef",
-            "intentRef",
-            "grantRef",
-            "evidenceRef",
-        )
-        self.patterns = {name: re.compile(defs[name]["pattern"]) for name in names}
-
-    def ref(self, name: str, value: Any) -> str:
-        if not isinstance(value, str) or self.patterns[name].fullmatch(value) is None:
-            raise ContractError(f"invalid {name}")
-        return value
-
-    def integrity(self) -> None:
-        if self.schema.get("$schema") != "https://json-schema.org/draft/2020-12/schema" or self.schema.get("$id") != SCHEMA_URI:
-            raise ContractError("schema identity mismatch")
-        if digest(canonical(self.schema)) != SCHEMA_DIGEST or digest(self.grammar) != GRAMMAR_DIGEST:
-            raise ContractError("contract digest mismatch")
-        if {x.get("$ref") for x in self.schema.get("oneOf", [])} != {
-            "#/$defs/profile",
-            "#/$defs/request",
-            "#/$defs/run",
-            "#/$defs/receipt",
-        }:
-            raise ContractError("document variants incomplete")
-        for fragment in ("root ::= request", "merge commands", "agent-ref ::=", "correlation-ref ::=", "sha256 ::="):
-            if fragment not in self.grammar:
-                raise ContractError("grammar incomplete")
-        self._closed(self.schema)
-
-    def _closed(self, value: Any) -> None:
-        if isinstance(value, dict):
-            if value.get("type") == "object" and value.get("additionalProperties") is not False:
-                raise ContractError("open object schema")
-            for child in value.values():
-                self._closed(child)
-        elif isinstance(value, list):
-            for child in value:
-                self._closed(child)
-
-
-def profile_example(kind: str = "doctor") -> dict[str, Any]:
-    lane = LANE_FOR_KIND[kind]
-    return {
-        "$schema": SCHEMA_URI,
-        "schema": "wellmanifest.agent-profile/v1",
-        "profileId": f"profile-{kind}",
-        "version": "1.0.0",
-        "agentRef": f"agent://example.test/{kind}/v1",
-        "kind": kind,
-        "lane": lane,
-        "mutation": MUTATION_FOR_KIND[kind],
-        "isolation": "isolated-workspace" if kind != "control" else "host-scheduler",
-        "identityRef": f"identity://example.test/{kind}",
-        "llmAuthority": "advisory",
-        "executesUntrustedCode": False,
-        "storesCredentials": False,
-        "maxClaimSeconds": 1800,
-    }
-
-
-def request_example() -> dict[str, Any]:
-    return {
-        "$schema": SCHEMA_URI,
-        "schema": "wellmanifest.agent-request/v1",
-        "requestId": "request-001",
-        "operation": "diagnose",
-        "agentRef": "agent://example.test/doctor/v1",
-        "correlationRef": "correlation://example.test/corr-001",
-        "targetRef": "target://example.test/product/subactor",
-        "targetKind": "product",
-        "intentRef": "intent://example.test/agent/request-001",
-        "grantRef": "grant://example.test/agent/request-001/g1",
-        "planHash": "a" * 64,
-    }
-
-
-def run_example() -> dict[str, Any]:
-    return {
-        "$schema": SCHEMA_URI,
-        "schema": "wellmanifest.agent-run-state/v1",
-        "runRef": "run://example.test/run-001",
-        "agentRef": "agent://example.test/doctor/v1",
-        "correlationRef": "correlation://example.test/corr-001",
-        "targetRef": "target://example.test/product/subactor",
-        "state": "diagnosing",
-        "version": 2,
-        "updatedAt": "2026-08-13T12:00:00Z",
-        "identityRef": "identity://example.test/doctor",
-        "claimedUntil": "2026-08-13T12:30:00Z",
-    }
-
-
-def receipt_example() -> dict[str, Any]:
-    return {
-        "$schema": SCHEMA_URI,
-        "schema": "wellmanifest.agent-receipt/v1",
-        "requestId": "request-001",
-        "runRef": "run://example.test/run-001",
-        "agentRef": "agent://example.test/doctor/v1",
-        "correlationRef": "correlation://example.test/corr-001",
-        "targetRef": "target://example.test/product/subactor",
-        "inputHash": "c" * 64,
-        "planHash": "a" * 64,
-        "outcome": "diagnosed",
-        "startedAt": "2026-08-13T11:50:00Z",
-        "completedAt": "2026-08-13T12:00:00Z",
-        "evidenceRefs": ["evidence://example.test/agent/diagnose-001/r1"],
-        "secretsRedacted": True,
-        "credentialsStored": False,
-    }
-
-
-def validate_profile(c: Contracts, value: Any) -> None:
+def validate_profile(c: Any, value: Any) -> None:
     reject_sensitive(value)
     value = exact(
         value,
@@ -245,6 +74,8 @@ def validate_profile(c: Contracts, value: Any) -> None:
     if value["$schema"] != SCHEMA_URI or value["schema"] != "wellmanifest.agent-profile/v1":
         raise ContractError("unsupported profile")
     c.ref("identifier", value["profileId"])
+    if not isinstance(value["version"], str) or _AC.SEMVER_RE.fullmatch(value["version"]) is None:
+        raise ContractError("invalid profile version")
     c.ref("agentRef", value["agentRef"])
     c.ref("identityRef", value["identityRef"])
     if value["kind"] not in LANE_FOR_KIND:
@@ -257,9 +88,11 @@ def validate_profile(c: Contracts, value: Any) -> None:
         raise ContractError("invalid isolation")
     if value["llmAuthority"] != "advisory":
         raise ContractError("llm is not advisory")
+    if not isinstance(value["executesUntrustedCode"], bool):
+        raise ContractError("executesUntrustedCode must be boolean")
     if value["storesCredentials"] is not False:
         raise ContractError("profile stores credentials")
-    if not isinstance(value["maxClaimSeconds"], int) or not 60 <= value["maxClaimSeconds"] <= 7200:
+    if not is_int(value["maxClaimSeconds"]) or not 60 <= value["maxClaimSeconds"] <= 7200:
         raise ContractError("invalid claim budget")
     if value["executesUntrustedCode"] is True and value["isolation"] != "networkless-executor":
         raise ContractError("untrusted execution outside networkless executor")
@@ -274,8 +107,12 @@ def validate_profile(c: Contracts, value: Any) -> None:
 def validate_identity_separation(profiles: list[dict[str, Any]]) -> None:
     identities: dict[str, str] = {}
     for profile in profiles:
-        kind = profile["kind"]
-        identity = profile["identityRef"]
+        if not isinstance(profile, dict):
+            raise ContractError("expected profile object")
+        kind = profile.get("kind")
+        identity = profile.get("identityRef")
+        if not isinstance(kind, str) or not isinstance(identity, str):
+            raise ContractError("invalid profile identity")
         if identity in identities and identities[identity] != kind:
             if {identities[identity], kind} & {"repair", "validator"}:
                 raise ContractError("repair and validator share identity")
@@ -283,7 +120,7 @@ def validate_identity_separation(profiles: list[dict[str, Any]]) -> None:
         identities[identity] = kind
 
 
-def validate_request(c: Contracts, value: Any) -> None:
+def validate_request(c: Any, value: Any) -> None:
     reject_sensitive(value)
     value = exact(
         value,
@@ -324,18 +161,21 @@ def validate_request(c: Contracts, value: Any) -> None:
         raise ContractError("invalid target kind")
     if value["operation"] in PRODUCT_ONLY_OPERATIONS and value["targetKind"] != "product":
         raise ContractError("repair cannot target control plane")
-    if value["operation"] in {"repair", "validate"}:
-        if "headSha" not in value or not re.fullmatch(r"[0-9a-f]{40}", str(value["headSha"])):
-            raise ContractError("exact head SHA required")
-    if value["operation"] == "lease":
-        if "leaseRef" not in value:
-            raise ContractError("lease request lacks lease")
+    if "headSha" in value and (
+        not isinstance(value["headSha"], str) or _AC.HEX40_RE.fullmatch(value["headSha"]) is None
+    ):
+        raise ContractError("exact head SHA required")
+    if value["operation"] in {"repair", "validate"} and "headSha" not in value:
+        raise ContractError("exact head SHA required")
+    if value["operation"] == "lease" and "leaseRef" not in value:
+        raise ContractError("lease request lacks lease")
+    if "leaseRef" in value:
         c.ref("leaseRef", value["leaseRef"])
     if "skillRef" in value:
         c.ref("skillRef", value["skillRef"])
 
 
-def validate_run(c: Contracts, value: Any) -> None:
+def validate_run(c: Any, value: Any) -> None:
     reject_sensitive(value)
     value = exact(
         value,
@@ -370,22 +210,27 @@ def validate_run(c: Contracts, value: Any) -> None:
         "failed",
     }:
         raise ContractError("invalid run state")
-    if not isinstance(value["version"], int) or value["version"] < 1:
+    if not is_int(value["version"]) or value["version"] < 1:
         raise ContractError("invalid version")
-    time_value(value["updatedAt"])
-    if value["state"] in {"claimed", "diagnosing", "repairing", "validating"}:
-        if not isinstance(value["claimedUntil"], str):
-            raise ContractError("active claim lacks deadline")
-        if time_value(value["claimedUntil"]) <= time_value(value["updatedAt"]):
+    updated_at = time_value(value["updatedAt"])
+    claimed_until = value["claimedUntil"]
+    if claimed_until is not None:
+        parsed_until = time_value(claimed_until)
+        if value["state"] in {"claimed", "diagnosing", "repairing", "validating"} and (
+            parsed_until <= updated_at
+        ):
             raise ContractError("claim is not forward-bounded")
-    if value["state"] in {"repairing", "validating"}:
-        if "headSha" not in value or not re.fullmatch(r"[0-9a-f]{40}", str(value["headSha"])):
-            raise ContractError("active mutation lacks exact SHA")
-    if "headSha" in value and not re.fullmatch(r"[0-9a-f]{40}", str(value["headSha"])):
+    elif value["state"] in {"claimed", "diagnosing", "repairing", "validating"}:
+        raise ContractError("active claim lacks deadline")
+    if "headSha" in value and (
+        not isinstance(value["headSha"], str) or _AC.HEX40_RE.fullmatch(value["headSha"]) is None
+    ):
         raise ContractError("invalid head SHA")
+    if value["state"] in {"repairing", "validating"} and "headSha" not in value:
+        raise ContractError("active mutation lacks exact SHA")
 
 
-def validate_receipt(c: Contracts, value: Any) -> None:
+def validate_receipt(c: Any, value: Any) -> None:
     reject_sensitive(value)
     value = exact(
         value,
@@ -414,17 +259,158 @@ def validate_receipt(c: Contracts, value: Any) -> None:
         c.ref(name, value[name])
     c.ref("sha256", value["inputHash"])
     c.ref("sha256", value["planHash"])
+    if value["outcome"] not in RECEIPT_OUTCOMES:
+        raise ContractError("invalid receipt outcome")
     if time_value(value["completedAt"]) < time_value(value["startedAt"]):
         raise ContractError("receipt chronology")
-    if not value["evidenceRefs"]:
-        raise ContractError("receipt lacks evidence")
-    for ref in value["evidenceRefs"]:
+    evidence = value["evidenceRefs"]
+    if not isinstance(evidence, list) or not 1 <= len(evidence) <= 64:
+        raise ContractError("receipt lacks bounded evidence list")
+    seen_refs: set[str] = set()
+    for ref in evidence:
         c.ref("evidenceRef", ref)
+        if ref in seen_refs:
+            raise ContractError("duplicate evidence ref")
+        seen_refs.add(ref)
     if value["secretsRedacted"] is not True or value["credentialsStored"] is not False:
         raise ContractError("unsafe receipt")
 
 
+def validate_any(c: Any, value: Any) -> None:
+    if not isinstance(value, dict):
+        raise ContractError("expected object")
+    kind = value.get("schema")
+    dispatch = {
+        "wellmanifest.agent-profile/v1": validate_profile,
+        "wellmanifest.agent-request/v1": validate_request,
+        "wellmanifest.agent-run-state/v1": validate_run,
+        "wellmanifest.agent-receipt/v1": validate_receipt,
+    }
+    validator = dispatch.get(str(kind))
+    if validator is None:
+        raise ContractError("unsupported agent schema")
+    validator(c, value)
+
+
+def _adversarial_cases(
+    c: Any,
+    request: dict[str, Any],
+    run: dict[str, Any],
+    receipt: dict[str, Any],
+) -> list[tuple[str, Callable[[], None]]]:
+    cases: list[tuple[str, Callable[[], None]]] = []
+
+    def add(name: str, fn: Callable[[Any, Any], None], payload: Any) -> None:
+        cases.append((name, lambda fn=fn, payload=payload: fn(c, payload)))
+
+    add(
+        "doctor-with-pr-mutation",
+        validate_profile,
+        {**profile_example("doctor"), "mutation": "pull-request"},
+    )
+    shared_pair = [
+        profile_example("repair"),
+        {**profile_example("validator"), "identityRef": "identity://example.test/repair"},
+    ]
+    cases.append(
+        (
+            "validator-shares-repair-identity",
+            lambda pair=shared_pair: validate_identity_separation(pair),
+        )
+    )
+    add(
+        "scheduler-executes-untrusted",
+        validate_profile,
+        {
+            **profile_example("control"),
+            "isolation": "host-scheduler",
+            "executesUntrustedCode": True,
+        },
+    )
+    add(
+        "vault-stores-credentials",
+        validate_profile,
+        {**profile_example("vault"), "storesCredentials": True},
+    )
+    add(
+        "llm-as-trust-root",
+        validate_profile,
+        {**profile_example("repair"), "llmAuthority": "authoritative"},
+    )
+    add(
+        "repair-without-head-sha",
+        validate_request,
+        {**copy.deepcopy(request), "operation": "repair"},
+    )
+    add(
+        "repair-control-plane",
+        validate_request,
+        {
+            **copy.deepcopy(request),
+            "operation": "repair",
+            "targetRef": "target://example.test/control/diagit",
+            "targetKind": "control-plane",
+            "headSha": "b" * 40,
+        },
+    )
+    add("inline-token", validate_request, {**copy.deepcopy(request), "token": "redacted-canary"})
+    add(
+        "bearer-grant-in-document",
+        validate_request,
+        {**copy.deepcopy(request), "grant_id": "runtime-grant-canary"},
+    )
+    add(
+        "merge-command", validate_request, {**copy.deepcopy(request), "mergeCommand": "gh pr merge"}
+    )
+    add("lease-without-ref", validate_request, {**copy.deepcopy(request), "operation": "lease"})
+    add("claim-without-deadline", validate_run, {**copy.deepcopy(run), "claimedUntil": None})
+    add("repairing-without-sha", validate_run, {**copy.deepcopy(run), "state": "repairing"})
+    add(
+        "credentials-in-receipt",
+        validate_receipt,
+        {**copy.deepcopy(receipt), "credentialsStored": True},
+    )
+    add("secret-field-receipt", validate_receipt, {**copy.deepcopy(receipt), "api_key": "redacted"})
+    add("version-bool-true", validate_run, {**copy.deepcopy(run), "version": True})
+    add(
+        "optional-invalid-lease-ref",
+        validate_request,
+        {**copy.deepcopy(request), "leaseRef": "not-a-lease-uri"},
+    )
+    add(
+        "inactive-run-invalid-claimed-until",
+        validate_run,
+        {**copy.deepcopy(run), "state": "released", "claimedUntil": 12345},
+    )
+    add(
+        "receipt-non-list-evidence",
+        validate_receipt,
+        {**copy.deepcopy(receipt), "evidenceRefs": 123},
+    )
+    add(
+        "receipt-duplicate-evidence",
+        validate_receipt,
+        {
+            **copy.deepcopy(receipt),
+            "evidenceRefs": [
+                "evidence://example.test/agent/diagnose-001/r1",
+                "evidence://example.test/agent/diagnose-001/r1",
+            ],
+        },
+    )
+    add(
+        "receipt-invalid-outcome",
+        validate_receipt,
+        {**copy.deepcopy(receipt), "outcome": "unknown"},
+    )
+    return cases
+
+
 def run_all() -> dict[str, Any]:
+    for py_path in sorted(ROOT.glob("*.py")):
+        lines = len(py_path.read_text(encoding="utf-8").splitlines())
+        if lines >= 500:
+            raise ContractError(f"module exceeds 500 lines: {py_path.name}")
     c = Contracts()
     c.integrity()
     profiles = [profile_example(kind) for kind in LANE_FOR_KIND]
@@ -444,62 +430,11 @@ def run_all() -> dict[str, Any]:
     validate_request(c, control_validation)
     validate_run(c, run)
     validate_receipt(c, receipt)
-    cases = []
-    bad = profile_example("doctor")
-    bad["mutation"] = "pull-request"
-    cases.append(("doctor-with-pr-mutation", lambda: validate_profile(c, bad)))
-    bad = profile_example("validator")
-    bad["identityRef"] = "identity://example.test/repair"
-    pair = [profile_example("repair"), bad]
-    cases.append(("validator-shares-repair-identity", lambda: validate_identity_separation(pair)))
-    bad = profile_example("control")
-    bad["isolation"] = "host-scheduler"
-    bad["executesUntrustedCode"] = True
-    cases.append(("scheduler-executes-untrusted", lambda: validate_profile(c, bad)))
-    bad = profile_example("vault")
-    bad["storesCredentials"] = True
-    cases.append(("vault-stores-credentials", lambda: validate_profile(c, bad)))
-    bad = profile_example("repair")
-    bad["llmAuthority"] = "authoritative"
-    cases.append(("llm-as-trust-root", lambda: validate_profile(c, bad)))
-    bad = copy.deepcopy(request)
-    bad["operation"] = "repair"
-    cases.append(("repair-without-head-sha", lambda: validate_request(c, bad)))
-    bad = copy.deepcopy(request)
-    bad["operation"] = "repair"
-    bad["targetRef"] = "target://example.test/control/diagit"
-    bad["targetKind"] = "control-plane"
-    bad["headSha"] = "b" * 40
-    cases.append(("repair-control-plane", lambda: validate_request(c, bad)))
-    bad = copy.deepcopy(request)
-    bad["token"] = "redacted-canary"
-    cases.append(("inline-token", lambda: validate_request(c, bad)))
-    bad = copy.deepcopy(request)
-    bad["grant_id"] = "runtime-grant-canary"
-    cases.append(("bearer-grant-in-document", lambda: validate_request(c, bad)))
-    bad = copy.deepcopy(request)
-    bad["mergeCommand"] = "gh pr merge"
-    cases.append(("merge-command", lambda: validate_request(c, bad)))
-    bad = copy.deepcopy(request)
-    bad["operation"] = "lease"
-    cases.append(("lease-without-ref", lambda: validate_request(c, bad)))
-    bad = copy.deepcopy(run)
-    bad["claimedUntil"] = None
-    cases.append(("claim-without-deadline", lambda: validate_run(c, bad)))
-    bad = copy.deepcopy(run)
-    bad["state"] = "repairing"
-    cases.append(("repairing-without-sha", lambda: validate_run(c, bad)))
-    bad = copy.deepcopy(receipt)
-    bad["credentialsStored"] = True
-    cases.append(("credentials-in-receipt", lambda: validate_receipt(c, bad)))
-    bad = copy.deepcopy(receipt)
-    bad["api_key"] = "redacted"
-    cases.append(("secret-field-receipt", lambda: validate_receipt(c, bad)))
     rejected = []
-    for name, case in cases:
+    for name, case in _adversarial_cases(c, request, run, receipt):
         try:
             case()
-        except (ContractError, KeyError, TypeError):
+        except ContractError:
             rejected.append(name)
         else:
             raise AssertionError(f"adversarial case accepted: {name}")
@@ -513,13 +448,26 @@ def run_all() -> dict[str, Any]:
     }
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--all", action="store_true")
-    args = parser.parse_args()
-    if not args.all:
-        parser.error("--all is required")
-    print(json.dumps(run_all(), indent=2, sort_keys=True))
+    parser.add_argument("--file", type=Path)
+    args = parser.parse_args(argv)
+    try:
+        if args.all:
+            print(json.dumps(run_all(), indent=2, sort_keys=True))
+        elif args.file:
+            if args.file.is_symlink():
+                raise ContractError("symlinked input forbidden")
+            c = Contracts()
+            c.integrity()
+            validate_any(c, strict_json_loads(args.file.read_text(encoding="utf-8")))
+            print(f"PASS: {args.file}")
+        else:
+            parser.error("choose --all or --file")
+    except (ContractError, OSError) as error:
+        print(f"FAIL: {error}", file=sys.stderr)
+        return 1
     return 0
 
 
