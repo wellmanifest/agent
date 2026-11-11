@@ -5,11 +5,22 @@ from __future__ import annotations
 
 import argparse
 import copy
-import json
+import importlib
 import re
+import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
+
+def _load_contracts_module() -> Any:
+    std_dir = str(Path(__file__).resolve().parent)
+    if std_dir not in sys.path:
+        sys.path.insert(0, std_dir)
+    return importlib.import_module("agent_contracts")
+
+
+_AC = _load_contracts_module()
 
 ROOT = Path(__file__).resolve().parent
 SCHEMA_PATH = ROOT / "repository-publisher-agent.schema.json"
@@ -34,12 +45,11 @@ IDENTITY_REF = re.compile(r"^identity://[a-z0-9.-]+/[A-Za-z0-9._:/-]+$")
 SENSITIVE = re.compile(
     r"(?:https?://|bearer\s|-----BEGIN|\b(?:ba)?sh\s+-c\b|\bgit\s+(?:push|reset)\b|"
     r"\bcurl\s|\bwget\s|\$\(|`)",
-    re.I,
+    re.IGNORECASE,
 )
-
-
-class ContractError(ValueError):
-    """A bounded validation error that never repeats untrusted input."""
+ContractError = _AC.ContractError
+is_int = _AC.is_int
+strict_json_loads = _AC.strict_json_loads
 
 
 def exact(value: Any, keys: set[str]) -> dict[str, Any]:
@@ -60,22 +70,46 @@ def reject_sensitive(value: Any, *, allow_schema: bool = False) -> None:
 
 
 def validate_profile(value: Any) -> None:
-    value = exact(value, {
-        "$schema", "schema", "profileId", "version", "agentRef", "kind", "lane",
-        "mutation", "identityRef", "operationProfile", "mutationContract",
-        "remotePrecondition", "authority", "executionSafety", "completion",
-        "maxClaimSeconds", "llmAuthority",
-    })
-    if value["$schema"] != SCHEMA_URI or value["schema"] != "wellmanifest.repository-publisher-agent/v1":
+    value = exact(
+        value,
+        {
+            "$schema",
+            "schema",
+            "profileId",
+            "version",
+            "agentRef",
+            "kind",
+            "lane",
+            "mutation",
+            "identityRef",
+            "operationProfile",
+            "mutationContract",
+            "remotePrecondition",
+            "authority",
+            "executionSafety",
+            "completion",
+            "maxClaimSeconds",
+            "llmAuthority",
+        },
+    )
+    if (
+        value["$schema"] != SCHEMA_URI
+        or value["schema"] != "wellmanifest.repository-publisher-agent/v1"
+    ):
         raise ContractError("unsupported publisher profile")
     if value["profileId"] != "profile.repository.publisher.v1" or value["version"] != "1.0.0":
         raise ContractError("publisher profile identity mismatch")
     if not isinstance(value["agentRef"], str) or AGENT_REF.fullmatch(value["agentRef"]) is None:
         raise ContractError("invalid publisher agent ref")
-    if not isinstance(value["identityRef"], str) or IDENTITY_REF.fullmatch(value["identityRef"]) is None:
+    if (
+        not isinstance(value["identityRef"], str)
+        or IDENTITY_REF.fullmatch(value["identityRef"]) is None
+    ):
         raise ContractError("invalid publisher identity ref")
     if (value["kind"], value["lane"], value["mutation"]) != (
-        "repository-publisher", "publish-initial-ref", "initial-ref-publish"
+        "repository-publisher",
+        "publish-initial-ref",
+        "initial-ref-publish",
     ):
         raise ContractError("publisher lane mismatch")
     for field, expected in ARTIFACTS.items():
@@ -85,15 +119,25 @@ def validate_profile(value: Any) -> None:
     if value["remotePrecondition"] != "empty-no-refs":
         raise ContractError("remote is not an unborn subject")
 
-    authority = exact(value["authority"], {
-        "mode", "requiredBindings", "singleUse", "inheritedAuthority", "whenMissing"
-    })
+    authority = exact(
+        value["authority"],
+        {"mode", "requiredBindings", "singleUse", "inheritedAuthority", "whenMissing"},
+    )
     required = {
-        "planDigest", "repositoryRef", "targetBranchRef", "sourceCommitSha",
-        "sourceTreeDigest", "allowlistDigest",
+        "planDigest",
+        "repositoryRef",
+        "targetBranchRef",
+        "sourceCommitSha",
+        "sourceTreeDigest",
+        "allowlistDigest",
     }
     bindings = authority["requiredBindings"]
-    if not isinstance(bindings, list) or len(bindings) != len(set(bindings)) or set(bindings) != required:
+    if (
+        not isinstance(bindings, list)
+        or not all(isinstance(item, str) for item in bindings)
+        or len(bindings) != len(set(bindings))
+        or set(bindings) != required
+    ):
         raise ContractError("publisher authority bindings mismatch")
     if authority != {
         "mode": "digest-bound",
@@ -104,9 +148,10 @@ def validate_profile(value: Any) -> None:
     }:
         raise ContractError("publisher authority is not fresh and fail-closed")
 
-    safety = exact(value["executionSafety"], {
-        "isolation", "executesUntrustedCode", "storesCredentials", "forceAllowed"
-    })
+    safety = exact(
+        value["executionSafety"],
+        {"isolation", "executesUntrustedCode", "storesCredentials", "forceAllowed"},
+    )
     if safety != {
         "isolation": "isolated-workspace",
         "executesUntrustedCode": False,
@@ -115,10 +160,17 @@ def validate_profile(value: Any) -> None:
     }:
         raise ContractError("publisher execution safety mismatch")
 
-    completion = exact(value["completion"], {
-        "publicationState", "publicationTerminal", "validatorRole",
-        "independentValidation", "terminalStates", "automaticRefDeletion",
-    })
+    completion = exact(
+        value["completion"],
+        {
+            "publicationState",
+            "publicationTerminal",
+            "validatorRole",
+            "independentValidation",
+            "terminalStates",
+            "automaticRefDeletion",
+        },
+    )
     if completion != {
         "publicationState": "initial-ref-published",
         "publicationTerminal": False,
@@ -128,7 +180,7 @@ def validate_profile(value: Any) -> None:
         "automaticRefDeletion": False,
     }:
         raise ContractError("publisher completion boundary mismatch")
-    if not isinstance(value["maxClaimSeconds"], int) or not 60 <= value["maxClaimSeconds"] <= 1800:
+    if not is_int(value["maxClaimSeconds"]) or not 60 <= value["maxClaimSeconds"] <= 1800:
         raise ContractError("publisher claim bound invalid")
     if value["llmAuthority"] != "advisory":
         raise ContractError("model gained publisher authority")
@@ -136,7 +188,7 @@ def validate_profile(value: Any) -> None:
 
 
 def schema_integrity() -> None:
-    schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+    schema = strict_json_loads(SCHEMA_PATH.read_text(encoding="utf-8"))
     if schema.get("$id") != SCHEMA_URI or schema.get("additionalProperties") is not False:
         raise ContractError("schema identity or closure mismatch")
 
@@ -163,7 +215,7 @@ def expect_rejected(callback: Callable[[], Any]) -> None:
 
 def run_all() -> None:
     schema_integrity()
-    profile = json.loads(PROFILE_PATH.read_text(encoding="utf-8"))
+    profile = strict_json_loads(PROFILE_PATH.read_text(encoding="utf-8"))
     validate_profile(profile)
     mutations = [
         lambda item: item["operationProfile"].update(revision="main"),
@@ -172,6 +224,7 @@ def run_all() -> None:
         lambda item: item["authority"].update(inheritedAuthority=True),
         lambda item: item["authority"].update(singleUse=False),
         lambda item: item["authority"]["requiredBindings"].remove("sourceTreeDigest"),
+        lambda item: item["authority"].update(requiredBindings=[{}]),
         lambda item: item["executionSafety"].update(forceAllowed=True),
         lambda item: item["executionSafety"].update(storesCredentials=True),
         lambda item: item["executionSafety"].update(executesUntrustedCode=True),
@@ -188,21 +241,23 @@ def run_all() -> None:
     print(f"PASS: 1 repository publisher profile, {len(mutations)} adversarial cases")
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--file", type=Path)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     try:
         schema_integrity()
         if args.all:
             run_all()
         elif args.file:
-            validate_profile(json.loads(args.file.read_text(encoding="utf-8")))
+            if args.file.is_symlink():
+                raise ContractError("symlinked input forbidden")
+            validate_profile(strict_json_loads(args.file.read_text(encoding="utf-8")))
             print(f"PASS: {args.file}")
         else:
             parser.error("choose --all or --file")
-    except (ContractError, json.JSONDecodeError, OSError) as error:
+    except (ContractError, OSError) as error:
         print(f"FAIL: {error}")
         return 1
     return 0

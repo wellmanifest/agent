@@ -1,0 +1,74 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-012",
+  "summary": "Modularize and harden agent conformance checks",
+  "workstream": "integration",
+  "classification": {
+    "kind": "BUG",
+    "priority": "P1",
+    "origin": "regression"
+  },
+  "allowedPaths": [
+    "project/ticket-012/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "standard/**"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "053a193c1d3ed57b25fdd850cce48a8d0a70b4cd",
+    "targetBranch": "main",
+    "outcome": "Modularize standard/conformance.py below 500 lines, fix the late-binding lambda closure bug in run_all() that shadowed 14 adversarial test cases, and enforce strict JSON Schema parity, duplicate-key rejection, bool-as-int rejection, and symlink rejection.",
+    "nonGoals": [
+      "Do not modify pinned standard/agent.schema.json or standard/agent.v1.gbnf digests."
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 30,
+    "budgets": {
+      "maxImplementationFiles": 5,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Extract shared primitives, schema loader, and fixture factories into standard/agent_contracts.py, harden validators in standard/conformance.py and standard/repository_publisher_conformance.py, and add unit coverage in standard/test_conformance.py.",
+      "components": [
+        {
+          "name": "agent-standard-conformance",
+          "paths": [
+            "standard/**"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Revert the ticket-012 commit on main."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "python3 standard/conformance.py --all",
+          "python3 standard/repository_publisher_conformance.py --all",
+          "python3 -m unittest discover -s standard -p 'test_*.py' -v",
+          "./project/governance-check.sh"
+        ],
+        "evidence": "All agent and publisher conformance suites, unit tests, modularity checks, and governance checks pass."
+      }
+    ]
+  }
+}
